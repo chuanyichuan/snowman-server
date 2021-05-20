@@ -28,6 +28,7 @@ import java.util.List;
 import cc.kevinlu.snow.server.generate.AbstractAlgorithm;
 import cc.kevinlu.snow.server.generate.worker.SnowflakeIdWorker;
 import cc.kevinlu.snow.server.processor.AlgorithmProcessor;
+import cc.kevinlu.snow.server.processor.redis.RedisProcessor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -36,8 +37,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SnowflakeAlgorithm extends AbstractAlgorithm<Long> {
 
-    public SnowflakeAlgorithm(AlgorithmProcessor algorithmProcessor) {
+    private RedisProcessor redisProcessor;
+
+    public SnowflakeAlgorithm(AlgorithmProcessor algorithmProcessor, RedisProcessor redisProcessor) {
         super(algorithmProcessor);
+        this.redisProcessor = redisProcessor;
     }
 
     @Override
@@ -45,7 +49,7 @@ public class SnowflakeAlgorithm extends AbstractAlgorithm<Long> {
         if (chunk <= 0) {
             throw new IndexOutOfBoundsException("size should not equals zero!");
         }
-        SnowflakeIdWorker worker = new SnowflakeIdWorker(groupId, instanceId);
+        SnowflakeIdWorker worker = new SnowflakeIdWorker(groupId, instanceId, redisProcessor);
         for (int i = 0; i < chunk; i++) {
             idList.add(worker.nextId());
         }

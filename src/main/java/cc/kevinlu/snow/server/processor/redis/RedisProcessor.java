@@ -48,22 +48,33 @@ public class RedisProcessor {
     /**
      * 默认过期时长，单位：秒
      */
-    public static final Long                      DEFAULT_EXPIRE    = 60 * 60 * 24L;
+    public static final Long                      DEFAULT_EXPIRE       = 60 * 60 * 24L;
 
     /**
      * 不设置过期时长
      */
-    public static final long                      NOT_EXPIRE        = -1;
+    public static final long                      NOT_EXPIRE           = -1;
 
-    public static final DefaultRedisScript<Long>  LOCK_LUA_SCRIPTS  = new DefaultRedisScript<>(
+    /**
+     * 定义获取锁的lua脚本
+     */
+    public static final DefaultRedisScript<Long>  LOCK_LUA_SCRIPTS     = new DefaultRedisScript<>(
             "if redis.call('setNx',KEYS[1],ARGV[1]) then if redis.call('get',KEYS[1])==ARGV[1] then return redis.call"
                     + "('pexpire',KEYS[1],ARGV[2]) else return 0 end end",
             Long.class);
 
-    //定义释放锁的lua脚本
-    private final static DefaultRedisScript<Long> UNLOCK_LUA_SCRIPT = new DefaultRedisScript<>(
+    /**
+     * 定义释放锁的lua脚本
+     */
+    private final static DefaultRedisScript<Long> UNLOCK_LUA_SCRIPT    = new DefaultRedisScript<>(
             "if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1]) else return 0 end",
             Long.class);
+
+    /**
+     * 定义获取Redis服务器时间的lua脚本
+     */
+    private final static DefaultRedisScript<Long> TIMESTAMP_LUA_SCRIPT = new DefaultRedisScript<>(
+            "local a=redis.call" + "('TIME') ;return (a[1]*1000000+a[2])/1000 ", Long.class);
 
     public boolean exists(String key) {
         return redisTemplate.hasKey(key);
@@ -795,6 +806,15 @@ public class RedisProcessor {
     public void sendMessage(String topic, Object message) {
         log.info("send redis message to [{}], content is [{}]", topic, message);
         redisTemplate.convertAndSend(topic, message);
+    }
+
+    /**
+     * 获取Redis服务器时间
+     * 
+     * @return
+     */
+    public Long getTimestamp() {
+        return redisTemplate.execute(TIMESTAMP_LUA_SCRIPT, Collections.EMPTY_LIST);
     }
 
 }

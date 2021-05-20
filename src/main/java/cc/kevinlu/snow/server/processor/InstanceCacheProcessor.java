@@ -128,7 +128,11 @@ public class InstanceCacheProcessor implements InitializingBean {
      * @return
      */
     public Long getGroupId(String groupCode) {
-        return (Long) redisProcessor.hget(Constants.CACHE_GROUP_MAP, groupCode);
+        Object id = redisProcessor.hget(Constants.CACHE_GROUP_MAP, groupCode);
+        if (id == null) {
+            return null;
+        }
+        return Long.parseLong(String.valueOf(id));
     }
 
     /**
@@ -139,8 +143,12 @@ public class InstanceCacheProcessor implements InitializingBean {
      * @return
      */
     public Long getInstanceId(Long groupId, String instanceCode) {
-        return (Long) redisProcessor.hget(Constants.CACHE_GROUP_INSTANT_MAP,
+        Object id = redisProcessor.hget(Constants.CACHE_GROUP_INSTANT_MAP,
                 String.format(INSTANCE_PATTERN, groupId, instanceCode));
+        if (id == null) {
+            return null;
+        }
+        return Long.parseLong(String.valueOf(id));
     }
 
     @Override

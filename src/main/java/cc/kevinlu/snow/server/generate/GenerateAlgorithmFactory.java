@@ -31,6 +31,7 @@ import cc.kevinlu.snow.server.generate.alogrithm.DigitAlgorithm;
 import cc.kevinlu.snow.server.generate.alogrithm.SnowflakeAlgorithm;
 import cc.kevinlu.snow.server.generate.alogrithm.UuidAlgorithm;
 import cc.kevinlu.snow.server.processor.AlgorithmProcessor;
+import cc.kevinlu.snow.server.processor.redis.RedisProcessor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -42,6 +43,8 @@ public class GenerateAlgorithmFactory {
 
     @Autowired
     private AlgorithmProcessor          algorithmProcessor;
+    @Autowired
+    private RedisProcessor              redisProcessor;
 
     private volatile DigitAlgorithm     digitAlgorithm;
     private volatile SnowflakeAlgorithm snowflakeAlgorithm;
@@ -55,7 +58,7 @@ public class GenerateAlgorithmFactory {
                 if (snowflakeAlgorithm == null) {
                     synchronized (lockObjs[0]) {
                         if (snowflakeAlgorithm == null) {
-                            snowflakeAlgorithm = new SnowflakeAlgorithm(algorithmProcessor);
+                            snowflakeAlgorithm = new SnowflakeAlgorithm(algorithmProcessor, redisProcessor);
                         }
                     }
                 }
