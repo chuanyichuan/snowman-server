@@ -1,4 +1,4 @@
-create table snowman.sm_digit
+create table sm_digit
 (
     id                  bigint auto_increment
         primary key,
@@ -13,7 +13,7 @@ create table snowman.sm_digit
 )
     comment '客户端获取ID记录';
 
-create table snowman.sm_distribution_lock
+create table sm_distribution_lock
 (
     id          bigint auto_increment
         primary key,
@@ -29,7 +29,7 @@ create table snowman.sm_distribution_lock
 )
     comment '分布式锁' charset = utf8mb4;
 
-create table snowman.sm_group
+create table sm_group
 (
     id           bigint auto_increment
         primary key,
@@ -44,9 +44,9 @@ create table snowman.sm_group
     comment '客户端服务组';
 
 create index sm_group_code_index
-    on snowman.sm_group (group_code);
+    on sm_group (group_code);
 
-create table snowman.sm_service_instance
+create table sm_service_instance
 (
     id          bigint auto_increment
         primary key,
@@ -60,9 +60,9 @@ create table snowman.sm_service_instance
     comment '客户端服务实例';
 
 create index sm_instance_group_index
-    on snowman.sm_service_instance (group_id, server_code);
+    on sm_service_instance (group_id, server_code);
 
-create table snowman.sm_snowflake
+create table sm_snowflake
 (
     id                  bigint auto_increment
         primary key,
@@ -76,7 +76,7 @@ create table snowman.sm_snowflake
 )
     comment '客户端获取雪花ID记录';
 
-create table snowman.sm_uuid
+create table sm_uuid
 (
     id                  bigint auto_increment
         primary key,
@@ -89,3 +89,4 @@ create table snowman.sm_uuid
         unique (service_instance_id, g_value)
 )
     comment '客户端获取UUID记录';
+
