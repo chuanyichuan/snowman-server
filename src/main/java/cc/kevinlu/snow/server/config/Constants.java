@@ -42,11 +42,14 @@ public final class Constants {
     /**
      * fill with groupId and instanceId and mode
      */
-    public static final String CACHE_ID_LOCK_PATTERN               = "cache_id_lock_%d_%d_%d";
+    public static final String CACHE_ID_LOCK_PATTERN               = "group_instance_id_%d_%d_%d";
 
     /**
      * fill with groupId
      */
     public static final String CACHE_GENERATE_LOCK_PATTERN         = "cache_generate_lock_%s";
+
+    public static final String CACHE_GROUP_MAP                     = "group_id_info";
+    public static final String CACHE_GROUP_INSTANT_MAP             = "group_instance_id_info";
 
 }
