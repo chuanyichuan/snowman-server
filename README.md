@@ -76,7 +76,7 @@ public class TestController {
 ###v1.0.2 分支 cc_1.0.2
  - [X] 支持ID预生成，优化每次请求效率，提升性能
  - [X] 加入任务异步处理，降低服务队系统资源的影响
- - [ ] 优化Snowflake时钟同步，使用数据库时钟做同步
+ - [X] 优化Snowflake时钟同步，使用Redis时钟做同步
  - [X] Web容器由Tomcat更改为Undertow 提升吞吐量
  - [X] 加入日志链路追踪MDC
  
