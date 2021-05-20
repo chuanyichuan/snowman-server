@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.kevinlu.snow.server.data.mapper.DistributionLockMapper">
+  <resultMap id="BaseResultMap" type="cc.kevinlu.snow.server.data.model.DistributionLockDO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="lock_key" jdbcType="VARCHAR" property="lockKey" />
+    <result column="lock_value" jdbcType="VARCHAR" property="lockValue" />
+    <result column="expire_time" jdbcType="BIGINT" property="expireTime" />
+    <result column="lock_owner" jdbcType="VARCHAR" property="lockOwner" />
+    <result column="version" jdbcType="INTEGER" property="version" />
+    <result column="is_locked" jdbcType="TINYINT" property="isLocked" />
+    <result column="gmt_created" jdbcType="TIMESTAMP" property="gmtCreated" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, lock_key, lock_value, expire_time, lock_owner, version, is_locked, gmt_created
+  </sql>
+  <select id="selectByExample" parameterType="cc.kevinlu.snow.server.data.model.DistributionLockDOExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from sm_distribution_lock
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from sm_distribution_lock
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from sm_distribution_lock
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="cc.kevinlu.snow.server.data.model.DistributionLockDOExample">
+    delete from sm_distribution_lock
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="cc.kevinlu.snow.server.data.model.DistributionLockDO">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into sm_distribution_lock (lock_key, lock_value, expire_time, 
+      lock_owner, version, is_locked, 
+      gmt_created)
+    values (#{lockKey,jdbcType=VARCHAR}, #{lockValue,jdbcType=VARCHAR}, #{expireTime,jdbcType=BIGINT}, 
+      #{lockOwner,jdbcType=VARCHAR}, #{version,jdbcType=INTEGER}, #{isLocked,jdbcType=TINYINT}, 
+      #{gmtCreated,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="cc.kevinlu.snow.server.data.model.DistributionLockDO">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into sm_distribution_lock
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="lockKey != null">
+        lock_key,
+      </if>
+      <if test="lockValue != null">
+        lock_value,
+      </if>
+      <if test="expireTime != null">
+        expire_time,
+      </if>
+      <if test="lockOwner != null">
+        lock_owner,
+      </if>
+      <if test="version != null">
+        version,
+      </if>
+      <if test="isLocked != null">
+        is_locked,
+      </if>
+      <if test="gmtCreated != null">
+        gmt_created,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="lockKey != null">
+        #{lockKey,jdbcType=VARCHAR},
+      </if>
+      <if test="lockValue != null">
+        #{lockValue,jdbcType=VARCHAR},
+      </if>
+      <if test="expireTime != null">
+        #{expireTime,jdbcType=BIGINT},
+      </if>
+      <if test="lockOwner != null">
+        #{lockOwner,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null">
+        #{version,jdbcType=INTEGER},
+      </if>
+      <if test="isLocked != null">
+        #{isLocked,jdbcType=TINYINT},
+      </if>
+      <if test="gmtCreated != null">
+        #{gmtCreated,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="cc.kevinlu.snow.server.data.model.DistributionLockDOExample" resultType="java.lang.Long">
+    select count(*) from sm_distribution_lock
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update sm_distribution_lock
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.lockKey != null">
+        lock_key = #{record.lockKey,jdbcType=VARCHAR},
+      </if>
+      <if test="record.lockValue != null">
+        lock_value = #{record.lockValue,jdbcType=VARCHAR},
+      </if>
+      <if test="record.expireTime != null">
+        expire_time = #{record.expireTime,jdbcType=BIGINT},
+      </if>
+      <if test="record.lockOwner != null">
+        lock_owner = #{record.lockOwner,jdbcType=VARCHAR},
+      </if>
+      <if test="record.version != null">
+        version = #{record.version,jdbcType=INTEGER},
+      </if>
+      <if test="record.isLocked != null">
+        is_locked = #{record.isLocked,jdbcType=TINYINT},
+      </if>
+      <if test="record.gmtCreated != null">
+        gmt_created = #{record.gmtCreated,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update sm_distribution_lock
+    set id = #{record.id,jdbcType=BIGINT},
+      lock_key = #{record.lockKey,jdbcType=VARCHAR},
+      lock_value = #{record.lockValue,jdbcType=VARCHAR},
+      expire_time = #{record.expireTime,jdbcType=BIGINT},
+      lock_owner = #{record.lockOwner,jdbcType=VARCHAR},
+      version = #{record.version,jdbcType=INTEGER},
+      is_locked = #{record.isLocked,jdbcType=TINYINT},
+      gmt_created = #{record.gmtCreated,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="cc.kevinlu.snow.server.data.model.DistributionLockDO">
+    update sm_distribution_lock
+    <set>
+      <if test="lockKey != null">
+        lock_key = #{lockKey,jdbcType=VARCHAR},
+      </if>
+      <if test="lockValue != null">
+        lock_value = #{lockValue,jdbcType=VARCHAR},
+      </if>
+      <if test="expireTime != null">
+        expire_time = #{expireTime,jdbcType=BIGINT},
+      </if>
+      <if test="lockOwner != null">
+        lock_owner = #{lockOwner,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null">
+        version = #{version,jdbcType=INTEGER},
+      </if>
+      <if test="isLocked != null">
+        is_locked = #{isLocked,jdbcType=TINYINT},
+      </if>
+      <if test="gmtCreated != null">
+        gmt_created = #{gmtCreated,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cc.kevinlu.snow.server.data.model.DistributionLockDO">
+    update sm_distribution_lock
+    set lock_key = #{lockKey,jdbcType=VARCHAR},
+      lock_value = #{lockValue,jdbcType=VARCHAR},
+      expire_time = #{expireTime,jdbcType=BIGINT},
+      lock_owner = #{lockOwner,jdbcType=VARCHAR},
+      version = #{version,jdbcType=INTEGER},
+      is_locked = #{isLocked,jdbcType=TINYINT},
+      gmt_created = #{gmtCreated,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

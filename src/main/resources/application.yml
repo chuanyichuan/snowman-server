@@ -1,0 +1,24 @@
+server:
+  undertow:
+    direct-buffers: true
+    io-threads: 8
+    worker-threads: 64 # io-threads * 8
+    buffer-size: 1024
+    accesslog:
+      enabled: true
+
+logging:
+  name: snowman
+  config: classpath:logback-spring.xml
+  file:
+    path: logs
+  level:
+    root: INFO
+    org.hibernate: INFO
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.hibernate.type.descriptor.sql.BasicExtractor: TRACE
+    cc.kevinlu.snow.server.data.mapper: INFO
+
+spring:
+  redis:
+    redisson: classpath:redis/redisson-single-config.yml

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.kevinlu.snow.server.data.mapper.SnowmanLockMapper">
+
+    <insert id="lock">
+        insert into sm_distribution_lock (`lock_key`, `lock_value`, expire_time, lock_owner)
+        values (#{key,jdbcType=VARCHAR}, #{value,jdbcType=VARCHAR},
+                unix_timestamp() * 1000 + #{expireTime,jdbcType=BIGINT},
+                #{owner,jdbcType=VARCHAR})
+    </insert>
+
+    <update id="reLock">
+        update sm_distribution_lock
+        set `lock_value` = #{value,jdbcType=VARCHAR},
+            expire_time  = unix_timestamp() * 1000 + #{expireTime,jdbcType=BIGINT},
+            lock_owner   = #{owner,jdbcType=VARCHAR}
+        where `lock_key` = #{key,jdbcType=VARCHAR}
+          and expire_time <![CDATA[<=]]> unix_timestamp() * 1000
+    </update>
+    <delete id="releaseLock">
+        delete
+        from sm_distribution_lock
+        where `lock_key` = #{key,jdbcType=VARCHAR}
+          and `lock_value` = #{value,jdbcType=VARCHAR}
+    </delete>
+</mapper>

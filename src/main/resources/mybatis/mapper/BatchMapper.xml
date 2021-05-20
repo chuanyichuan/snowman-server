@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.kevinlu.snow.server.data.mapper.BatchMapper">
+    <resultMap id="BaseResultMap" type="cc.kevinlu.snow.server.data.model.DigitDO">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="service_instance_id" jdbcType="BIGINT" property="serviceInstanceId"/>
+        <result column="chunk" jdbcType="INTEGER" property="chunk"/>
+        <result column="from_value" jdbcType="BIGINT" property="fromValue"/>
+        <result column="to_value" jdbcType="BIGINT" property="toValue"/>
+        <result column="gmt_created" jdbcType="TIMESTAMP" property="gmtCreated"/>
+    </resultMap>
+
+    <insert id="insertDigit">
+        insert into sm_digit (service_instance_id, chunk, from_value, to_value, status, gmt_created) values
+        <foreach collection="records" item="r" separator=",">
+            (#{r.serviceInstanceId,jdbcType=BIGINT}, #{r.chunk,jdbcType=INTEGER},
+            #{r.fromValue,jdbcType=BIGINT}, #{r.toValue,jdbcType=BIGINT},
+            #{r.status,jdbcType=TINYINT}, #{r.gmtCreated,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+
+    <insert id="insertSnowflake">
+        insert into sm_snowflake (service_instance_id, chunk, g_value, status, gmt_created) values
+        <foreach collection="records" item="r" separator=",">
+            (#{r.serviceInstanceId,jdbcType=BIGINT}, #{r.chunk,jdbcType=INTEGER}, #{r.gValue,jdbcType=BIGINT},
+            #{r.status,jdbcType=TINYINT}, #{r.gmtCreated,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+
+    <insert id="insertUuid">
+        insert into sm_uuid (service_instance_id, chunk, g_value, status, gmt_created) values
+        <foreach collection="records" item="r" separator=",">
+            (#{r.serviceInstanceId,jdbcType=BIGINT}, #{r.chunk,jdbcType=INTEGER},
+            #{r.gValue,jdbcType=VARCHAR}, #{r.status,jdbcType=TINYINT},
+            #{r.gmtCreated,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+
+    <update id="updateSnowTimes">
+        update sm_service_instance
+        set snow_times = snow_times + 1
+        where id = #{instanceId, jdbcType=BIGINT}
+    </update>
+
+    <select id="selectIdFromDigit" resultType="java.lang.Long">
+        select id from sm_digit
+        where service_instance_id = #{instanceId, jdbcType=BIGINT}
+        <if test="status != null">
+            AND status = #{status, jdbcType=INTEGER}
+        </if>
+    </select>
+    <select id="selectIdFromUuid" resultType="java.lang.Long">
+        select id from sm_uuid
+        where service_instance_id = #{instanceId, jdbcType=BIGINT}
+        <if test="status != null">
+            AND status = #{status, jdbcType=INTEGER}
+        </if>
+    </select>
+    <select id="selectIdFromSnowflake" resultType="java.lang.Long">
+        select id from sm_snowflake
+        where service_instance_id = #{instanceId, jdbcType=BIGINT}
+        <if test="status != null">
+            AND status = #{status, jdbcType=INTEGER}
+        </if>
+    </select>
+
+</mapper>

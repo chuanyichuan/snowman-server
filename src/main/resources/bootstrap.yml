@@ -1,0 +1,14 @@
+spring:
+  cloud:
+    inetutils:
+      ignored-interfaces: docker0
+    nacos:
+      discovery:
+        server-addr: @nacos.url@
+        namespace: @profiles.active@
+        ip: @discovery.ip@
+      config:
+        server-addr: @nacos.url@
+        file-extension: yaml
+        name: snowman
+        namespace: @profiles.active@
