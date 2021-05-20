@@ -70,10 +70,7 @@ public class TestController {
  - [X] 支持Snowflake ID生成算法
  - [X] 支持UUID 生成算法
  - [X] 构建snowman-spring-boot-starter实现自动配置
- - [X] 使用本地锁保证并发数据一致性
- - [X] 仅支持单机部署
- 
-### v1.0.2 分支 cc_1.0.2
+ - [X] 支持高可用集群部署
  - [X] 支持ID预生成，优化每次请求效率，提升性能
  - [X] 加入任务异步处理，降低服务队系统资源的影响
  - [X] 优化Snowflake时钟同步，使用Redis时钟做同步
