@@ -65,7 +65,7 @@ public class TestController {
 > `maven`依赖等详细配置请查看[examples](https://github.com/chuanyichuan/snowman-example)目录下的演示项目
 
 ## 开发计划
-### v1.0.1  分支： main
+### v1.0.0  分支： main
  - [X] 支持Digit ID 生成算法
  - [X] 支持Snowflake ID生成算法
  - [X] 支持UUID 生成算法
