@@ -1,6 +1,12 @@
 # snowman
 snowflake（分布式ID生成器），基于Twitter的Snowflake理论
 
+
+[![Build Status](https://github.com/seata/seata/workflows/build/badge.svg?branch=develop)](https://github.com/chuanyichuan/snowman-server/actions)
+[![codecov](https://codecov.io/gh/seata/seata/branch/develop/graph/badge.svg)](https://codecov.io/gh/chuanyichuan/snowman-server)
+[![license](https://img.shields.io/github/license/seata/seata.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
+[![maven](https://img.shields.io/maven-central/v/io.seata/seata-parent.svg)](https://search.maven.org/search?q=cc.kevinlu)
+
 支持客户端分组按块（chunk）生成算法，当前支持的算法包括UUID、DIGIT递增顺序号、SNOWFLAKE（雪花算法）
 
 ![功能脑图](docs/snowman.png)
