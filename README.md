@@ -2,16 +2,12 @@
 snowflake（分布式ID生成器），基于Twitter的Snowflake理论
 
 
-[![Build Status](https://github.com/seata/seata/workflows/build/badge.svg?branch=develop)](https://github.com/chuanyichuan/snowman-server/actions)
-[![codecov](https://codecov.io/gh/seata/seata/branch/develop/graph/badge.svg)](https://codecov.io/gh/chuanyichuan/snowman-server)
-[![license](https://img.shields.io/github/license/seata/seata.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
-[![maven](https://img.shields.io/maven-central/v/io.seata/seata-parent.svg)](https://search.maven.org/search?q=cc.kevinlu)
 
 支持客户端分组按块（chunk）生成算法，当前支持的算法包括UUID、DIGIT递增顺序号、SNOWFLAKE（雪花算法）
 
 ![功能脑图](docs/snowman.png)
 
-    
+
 ## 项目说明
 
 - ***JDK 版本要求: `JDK8+`*** 
@@ -67,7 +63,7 @@ public class TestController {
         return snowmanClient.generateSnowId();
     }
 }
-```
+ ```
 > `maven`依赖等详细配置请查看[examples](https://github.com/chuanyichuan/snowman-example)目录下的演示项目
 
 ## 开发计划
@@ -82,7 +78,7 @@ public class TestController {
  - [X] 优化Snowflake时钟同步，使用Redis时钟做同步
  - [X] Web容器由Tomcat更改为Undertow 提升吞吐量
  - [X] 加入日志链路追踪MDC
- 
+
 ## 贡献指南
 
  代码要求：
@@ -90,7 +86,6 @@ public class TestController {
   - 保持代码整洁，比如注释掉的代码块等垃圾代码应该删除
   - 严格控制外部依赖，如果没有必要，请不要引入外部依赖
   - 请在类注释中保留你的作者信息，请不要害羞
-
 
 
 
