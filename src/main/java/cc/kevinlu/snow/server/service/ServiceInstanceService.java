@@ -35,11 +35,11 @@ public interface ServiceInstanceService {
 
     /**
      * logic: <br />
-     * <p>1. get the field of groupCode for lock</p>
-     * <p>2. verify the groupCode, if it not in ConcurrentHashMapA, to 3, else to 4</p>
-     * <p>3. insert the groupCode into database, and put it into ConcurrentHashMapA for cache</p>
-     * <p>4. verify the instanceCode, if it not in ConcurrentHashMapB, to 5, else to 6</p>
-     * <p>5. insert the instanceCode into database, and put it into ConcurrentHashMapB for cache</p>
+     * <p>1. get the field of group code for lock</p>
+     * <p>2. verify the group code, if it not in ConcurrentHashMapA, to 3, else to 4</p>
+     * <p>3. insert the group code into the database, and put it into ConcurrentHashMapA for cache</p>
+     * <p>4. verify the instance code, if it not in ConcurrentHashMapB, to 5, else to 6</p>
+     * <p>5. insert the instance code into the database, and put it into ConcurrentHashMapB for cache</p>
      * 
      * @param instance
      * @return
@@ -47,7 +47,7 @@ public interface ServiceInstanceService {
     boolean registerService(ServiceInstance instance);
 
     /**
-     * get all instance info from database
+     * get all instance information from the database
      * 
      * @param params
      * @return

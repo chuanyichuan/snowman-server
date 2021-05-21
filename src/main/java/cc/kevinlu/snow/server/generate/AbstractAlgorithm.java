@@ -88,7 +88,7 @@ public abstract class AbstractAlgorithm<T> {
     }
 
     /**
-     * client can get records by call it
+     * the client can get records by calling it
      *
      * @param regenerate
      * @return

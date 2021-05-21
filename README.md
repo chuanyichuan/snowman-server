@@ -79,6 +79,10 @@ public class TestController {
  - [X] Web容器由Tomcat更改为Undertow 提升吞吐量
  - [X] 加入日志链路追踪MDC
 
+### v1.0.1  分支： v1.0.1
+ - [ ] 历史记录支持分表，缓解数据量过大导致的操作性能问题
+ - [ ] 使用Redis控制定期任务执行节点
+
 ## 贡献指南
 
  代码要求：
