@@ -72,7 +72,7 @@ public class RedisQueueListener {
     private RedisQueueListener          redisQueueListener;
 
     public void onMessage(String content) {
-        log.info("receive check message from redis: , content = [{}]", content);
+        log.info("receive check message from redis: content = [{}]", content);
         PreGenerateBO preGenerateBO = (PreGenerateBO) jacksonSerializer
                 .deserialize(content.getBytes(StandardCharsets.UTF_8));
         redisQueueListener.checkChunkSize(preGenerateBO);

@@ -33,7 +33,7 @@ import java.util.List;
 public class CollectionUtils {
 
     /**
-     * fill list with data
+     * fill the list with data
      * 
      * @param list
      * @param from
@@ -44,7 +44,7 @@ public class CollectionUtils {
         if (to - from > Integer.MAX_VALUE) {
             throw new IndexOutOfBoundsException("size too long!");
         } else if (to >= from) {
-            throw new IndexOutOfBoundsException("size should not equals zero!");
+            throw new IndexOutOfBoundsException("size should not equal zero!");
         }
         if (list == null) {
             list = new ArrayList((int) (to - from + 1));
