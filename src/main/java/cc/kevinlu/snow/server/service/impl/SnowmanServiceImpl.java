@@ -42,10 +42,9 @@ import cc.kevinlu.snow.server.listener.pojo.PreGenerateBO;
 import cc.kevinlu.snow.server.processor.AlgorithmProcessor;
 import cc.kevinlu.snow.server.processor.pojo.RecordAcquireBO;
 import cc.kevinlu.snow.server.processor.redis.RedisProcessor;
-import cc.kevinlu.snow.server.processor.task.CheckChunkProcessor;
 import cc.kevinlu.snow.server.processor.task.RedisMessageSender;
 import cc.kevinlu.snow.server.processor.task.pojo.RegenerateBO;
-import cc.kevinlu.snow.server.service.SnowflakeService;
+import cc.kevinlu.snow.server.service.SnowmanService;
 import cc.kevinlu.snow.server.utils.CollectionUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,7 +53,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Service
-public class SnowflakeServiceImpl implements SnowflakeService {
+public class SnowmanServiceImpl implements SnowmanService {
 
     @Autowired
     private GroupMapper              groupMapper;
@@ -64,8 +63,6 @@ public class SnowflakeServiceImpl implements SnowflakeService {
     private RedisProcessor           redisProcessor;
     @Autowired
     private AlgorithmProcessor       algorithmProcessor;
-    @Autowired
-    private CheckChunkProcessor      checkChunkProcessor;
     @Autowired
     private GenerateAlgorithmFactory generateAlgorithmFactory;
 

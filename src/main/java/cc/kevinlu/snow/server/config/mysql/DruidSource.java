@@ -27,16 +27,16 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 
 import com.alibaba.druid.pool.DruidDataSource;
-import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
 
 import lombok.Data;
 
-//@Data
-//@NacosConfigurationProperties(prefix = "spring.datasource.druid", dataId = "snowman")
+@Data
+@ConfigurationProperties(prefix = "spring.datasource.druid")
 public class DruidSource {
     private String  dbUrl;
 

@@ -35,6 +35,14 @@
             #{r.gmtCreated,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
+    <insert id="insertTimestamp">
+        insert into sm_timestamp (service_instance_id, chunk, g_value, status, gmt_created) values
+        <foreach collection="records" item="r" separator=",">
+            (#{r.serviceInstanceId,jdbcType=BIGINT}, #{r.chunk,jdbcType=INTEGER},
+            #{r.gValue,jdbcType=VARCHAR}, #{r.status,jdbcType=TINYINT},
+            #{r.gmtCreated,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
 
     <update id="updateSnowTimes">
         update sm_service_instance
@@ -42,22 +50,8 @@
         where id = #{instanceId, jdbcType=BIGINT}
     </update>
 
-    <select id="selectIdFromDigit" resultType="java.lang.Long">
-        select id from sm_digit
-        where service_instance_id = #{instanceId, jdbcType=BIGINT}
-        <if test="status != null">
-            AND status = #{status, jdbcType=INTEGER}
-        </if>
-    </select>
-    <select id="selectIdFromUuid" resultType="java.lang.Long">
-        select id from sm_uuid
-        where service_instance_id = #{instanceId, jdbcType=BIGINT}
-        <if test="status != null">
-            AND status = #{status, jdbcType=INTEGER}
-        </if>
-    </select>
-    <select id="selectIdFromSnowflake" resultType="java.lang.Long">
-        select id from sm_snowflake
+    <select id="selectIdFromAlgorithm" resultType="java.lang.Long">
+        select id from ${table_name}
         where service_instance_id = #{instanceId, jdbcType=BIGINT}
         <if test="status != null">
             AND status = #{status, jdbcType=INTEGER}

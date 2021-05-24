@@ -81,4 +81,4 @@ spring:
 
 snowman:
   transfer:
-    table: sm_digit,sm_snowflake,sm_uuid
+    table: sm_digit,sm_snowflake,sm_uuid,sm_timestamp

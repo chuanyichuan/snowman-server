@@ -35,10 +35,7 @@ import cc.kevinlu.snow.server.data.mapper.BatchMapper;
 import cc.kevinlu.snow.server.data.mapper.GroupMapper;
 import cc.kevinlu.snow.server.data.model.GroupDO;
 import cc.kevinlu.snow.server.pojo.PersistentBO;
-import cc.kevinlu.snow.server.processor.algorithm.DigitPersistentProcessor;
-import cc.kevinlu.snow.server.processor.algorithm.PersistentProcessor;
-import cc.kevinlu.snow.server.processor.algorithm.SnowflakePersistentProcessor;
-import cc.kevinlu.snow.server.processor.algorithm.UuidPersistentProcessor;
+import cc.kevinlu.snow.server.processor.algorithm.*;
 import cc.kevinlu.snow.server.processor.pojo.AsyncCacheBO;
 import cc.kevinlu.snow.server.processor.pojo.RecordAcquireBO;
 import cc.kevinlu.snow.server.processor.redis.RedisProcessor;
@@ -59,6 +56,8 @@ public class AlgorithmProcessor {
     private SnowflakePersistentProcessor snowflakePersistentProcessor;
     @Autowired
     private DigitPersistentProcessor     digitPersistentProcessor;
+    @Autowired
+    private TimestampPersistentProcessor timestampPersistentProcessor;
     @Autowired
     private RedisProcessor               redisProcessor;
 
@@ -120,6 +119,8 @@ public class AlgorithmProcessor {
                 return uuidPersistentProcessor;
             case SNOWFLAKE:
                 return snowflakePersistentProcessor;
+            case TIMESTAMP:
+                return timestampPersistentProcessor;
             default:
                 return digitPersistentProcessor;
         }
@@ -140,5 +141,9 @@ public class AlgorithmProcessor {
             redisProcessor.hset(Constants.GROUP_RECENT_MAX_VALUE_QUEUE, key, maxValue);
         }
         return maxValue;
+    }
+
+    public Long timeStamp() {
+        return redisProcessor.getTimestamp() * 10;
     }
 }

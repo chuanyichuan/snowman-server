@@ -8,6 +8,7 @@ import com.alibaba.fastjson.JSONArray;
 import cc.kevinlu.snow.server.data.mapper.TransferMapper;
 import cc.kevinlu.snow.server.data.model.DigitDO;
 import cc.kevinlu.snow.server.data.model.SnowflakeDO;
+import cc.kevinlu.snow.server.data.model.TimeStampDO;
 import cc.kevinlu.snow.server.data.model.UuidDO;
 import cc.kevinlu.snow.server.utils.CollectionUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -68,6 +69,9 @@ public class TransferUsedIdTask implements Runnable {
         } else if ("sm_snowflake".equalsIgnoreCase(table)) {
             List<SnowflakeDO> list = array.toJavaList(SnowflakeDO.class);
             transferMapper.transferSnowflake(list);
+        } else if ("sm_timestamp".equalsIgnoreCase(table)) {
+            List<TimeStampDO> list = array.toJavaList(TimeStampDO.class);
+            transferMapper.transferTimeStamp(list);
         }
     }
 
