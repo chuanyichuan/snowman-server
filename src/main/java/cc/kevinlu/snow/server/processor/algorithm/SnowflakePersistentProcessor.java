@@ -37,7 +37,6 @@ import cc.kevinlu.snow.server.data.mapper.SnowflakeMapper;
 import cc.kevinlu.snow.server.data.model.SnowflakeDO;
 import cc.kevinlu.snow.server.data.model.SnowflakeDOExample;
 import cc.kevinlu.snow.server.pojo.PersistentBO;
-import cc.kevinlu.snow.server.pojo.enums.StatusEnums;
 import cc.kevinlu.snow.server.processor.pojo.AsyncCacheBO;
 import cc.kevinlu.snow.server.processor.pojo.RecordAcquireBO;
 import cc.kevinlu.snow.server.processor.redis.RedisProcessor;
@@ -52,7 +51,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Component
-public class SnowflakePersistentProcessor implements PersistentProcessor<Long> {
+public class SnowflakePersistentProcessor extends PersistentProcessor<Long> {
 
     @Autowired
     private BatchMapper        batchMapper;
@@ -63,18 +62,11 @@ public class SnowflakePersistentProcessor implements PersistentProcessor<Long> {
     @Autowired
     private AsyncTaskProcessor asyncTaskProcessor;
 
+    public static final String TABLE = "sm_snowflake";
+
     @Override
     public void asyncToCache(AsyncCacheBO asyncCacheBO) {
-        List<Long> recordList = batchMapper.selectIdFromSnowflake(asyncCacheBO.getInstanceId(),
-                StatusEnums.USABLE.getStatus());
-        if (CollectionUtils.isEmpty(recordList)) {
-            log.debug("async to cache empty!");
-            return;
-        }
-        String key = String.format(Constants.CACHE_ID_LOCK_PATTERN, asyncCacheBO.getGroupId(),
-                asyncCacheBO.getInstanceId(), asyncCacheBO.getMode());
-        redisProcessor.del(key);
-        redisProcessor.lSet(key, recordList);
+        super.asyncToCacheCall(asyncCacheBO, TABLE);
     }
 
     @Override

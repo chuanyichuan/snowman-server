@@ -29,7 +29,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import cc.kevinlu.snow.client.enums.IdAlgorithmEnums;
@@ -102,7 +101,7 @@ public class CheckChunkProcessor {
      * 
      * @param regenerate
      */
-    @Transactional(rollbackFor = Exception.class, propagation = Propagation.NESTED, transactionManager = "code_transaction")
+    @Transactional(rollbackFor = Exception.class)
     public void startRegenerate(RegenerateBO regenerate) {
         long total = regenerate.getChunk() * DEFAULT_MULTIPLE_FACTOR;
         long survivor = redisCount(regenerate);

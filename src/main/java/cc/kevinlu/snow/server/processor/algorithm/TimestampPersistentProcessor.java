@@ -33,9 +33,9 @@ import org.springframework.stereotype.Component;
 
 import cc.kevinlu.snow.server.config.Constants;
 import cc.kevinlu.snow.server.data.mapper.BatchMapper;
-import cc.kevinlu.snow.server.data.mapper.UuidMapper;
-import cc.kevinlu.snow.server.data.model.UuidDO;
-import cc.kevinlu.snow.server.data.model.UuidDOExample;
+import cc.kevinlu.snow.server.data.mapper.TimeStampMapper;
+import cc.kevinlu.snow.server.data.model.TimeStampDO;
+import cc.kevinlu.snow.server.data.model.TimeStampDOExample;
 import cc.kevinlu.snow.server.pojo.PersistentBO;
 import cc.kevinlu.snow.server.processor.pojo.AsyncCacheBO;
 import cc.kevinlu.snow.server.processor.pojo.RecordAcquireBO;
@@ -51,18 +51,18 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Component
-public class UuidPersistentProcessor extends PersistentProcessor<String> {
+public class TimestampPersistentProcessor extends PersistentProcessor<Long> {
 
     @Autowired
     private BatchMapper        batchMapper;
     @Autowired
     private RedisProcessor     redisProcessor;
     @Autowired
-    private UuidMapper         uuidMapper;
+    private TimeStampMapper    timeStampMapper;
     @Autowired
     private AsyncTaskProcessor asyncTaskProcessor;
 
-    public static final String TABLE = "sm_uuid";
+    public static final String TABLE = "sm_timestamp";
 
     @Override
     public void asyncToCache(AsyncCacheBO asyncCacheBO) {
@@ -70,46 +70,46 @@ public class UuidPersistentProcessor extends PersistentProcessor<String> {
     }
 
     @Override
-    public void syncToDb(PersistentBO<String> persistent) {
+    public void syncToDb(PersistentBO<Long> persistent) {
         long instanceId = persistent.getInstanceId();
-        List<String> idList = persistent.getIdList();
+        List<Long> idList = persistent.getIdList();
         int status = persistent.getUsed() ? 1 : 0;
         int chunk = idList.size();
         Date date = new Date();
-        List<UuidDO> records = new ArrayList<>();
+        List<TimeStampDO> records = new ArrayList<>();
         int index = 1;
-        for (String id : idList) {
-            UuidDO uuid = new UuidDO();
+        for (Long id : idList) {
+            TimeStampDO uuid = new TimeStampDO();
             uuid.setChunk(chunk);
             uuid.setServiceInstanceId(instanceId);
-            uuid.setGValue(id);
+            uuid.setGValue(String.valueOf(id));
             uuid.setStatus(status);
             uuid.setGmtCreated(date);
             records.add(uuid);
             if (index++ % Constants.BATCH_INSERT_SIZE == 0) {
-                batchMapper.insertUuid(records);
+                batchMapper.insertTimestamp(records);
                 records.clear();
             }
         }
         if (!CollectionUtils.isEmpty(records)) {
-            batchMapper.insertUuid(records);
+            batchMapper.insertTimestamp(records);
         }
     }
 
     @Override
-    public List<String> getRecords(RecordAcquireBO acquireBO) {
+    public List<Long> getRecords(RecordAcquireBO acquireBO) {
         String key = String.format(Constants.CACHE_ID_LOCK_PATTERN, acquireBO.getGroupId(), acquireBO.getInstanceId(),
                 acquireBO.getMode());
         List records = redisProcessor.lGet(key, 0, acquireBO.getChunk() - 1);
         if (CollectionUtils.isEmpty(records)) {
             return null;
         }
-        UuidDOExample example = new UuidDOExample();
+        TimeStampDOExample example = new TimeStampDOExample();
         example.createCriteria().andIdIn(records);
-        List<UuidDO> dataList = uuidMapper.selectByExample(example);
-        List<String> result = dataList.stream().map(UuidDO::getGValue).collect(Collectors.toList());
-        asyncTaskProcessor.uuidStatus(records);
-        redisProcessor.lTrim(key, acquireBO.getChunk() - 1, -1);
+        List<TimeStampDO> dataList = timeStampMapper.selectByExample(example);
+        List<Long> result = dataList.stream().map(v -> Long.parseLong(v.getGValue())).collect(Collectors.toList());
+        asyncTaskProcessor.timestampStatus(records);
+        redisProcessor.lTrim(key, acquireBO.getChunk(), -1);
         return result;
     }
 

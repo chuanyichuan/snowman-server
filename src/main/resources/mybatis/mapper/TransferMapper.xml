@@ -32,6 +32,13 @@
             -1, #{r.gmtCreated,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
+    <insert id="transferTimeStamp">
+        insert into sm_timestamp (service_instance_id, chunk, g_value, status, gmt_created) values
+        <foreach collection="records" item="r" separator=",">
+            (#{r.serviceInstanceId,jdbcType=BIGINT}, #{r.chunk,jdbcType=INTEGER}, #{r.gValue,jdbcType=BIGINT},
+            -1, #{r.gmtCreated,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
 
     <delete id="postTransfer">
         delete from ${table_name}

@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 import cc.kevinlu.snow.client.enums.IdAlgorithmEnums;
 import cc.kevinlu.snow.server.generate.alogrithm.DigitAlgorithm;
 import cc.kevinlu.snow.server.generate.alogrithm.SnowflakeAlgorithm;
+import cc.kevinlu.snow.server.generate.alogrithm.TimeStampAlgorithm;
 import cc.kevinlu.snow.server.generate.alogrithm.UuidAlgorithm;
 import cc.kevinlu.snow.server.processor.AlgorithmProcessor;
 import cc.kevinlu.snow.server.processor.redis.RedisProcessor;
@@ -49,7 +50,9 @@ public class GenerateAlgorithmFactory {
     private volatile DigitAlgorithm     digitAlgorithm;
     private volatile SnowflakeAlgorithm snowflakeAlgorithm;
     private volatile UuidAlgorithm      uuidAlgorithm;
-    private Object[]                    lockObjs = new Object[] { new Object(), new Object(), new Object() };
+    private volatile TimeStampAlgorithm timeStampAlgorithm;
+    private Object[]                    lockObjs = new Object[] { new Object(), new Object(), new Object(),
+            new Object() };
 
     public AbstractAlgorithm factory(Integer mode) {
         IdAlgorithmEnums algorithm = IdAlgorithmEnums.getEnumByAlgorithm(mode);
@@ -72,6 +75,15 @@ public class GenerateAlgorithmFactory {
                     }
                 }
                 return uuidAlgorithm;
+            case TIMESTAMP:
+                if (timeStampAlgorithm == null) {
+                    synchronized (lockObjs[3]) {
+                        if (timeStampAlgorithm == null) {
+                            timeStampAlgorithm = new TimeStampAlgorithm(algorithmProcessor);
+                        }
+                    }
+                }
+                return timeStampAlgorithm;
             default:
                 if (digitAlgorithm == null) {
                     synchronized (lockObjs[2]) {
