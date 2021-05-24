@@ -1,0 +1,39 @@
+spring:
+  shardingsphere:
+    datasource:
+      names: dc-1
+      dc-1:
+        url: jdbc:mysql://localhost:3306/snowman?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&useSSL=true
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        username: root
+        password: root
+    props:
+      sql:
+        show: true
+    sharding:
+      tables:
+        sm_digit:
+          actual-data-nodes: dc-1.sm_digit$->{['', '_used']}
+          table-strategy:
+            standard:
+              sharding-column: status
+              precise-algorithm-class-name: cc.kevinlu.snow.server.config.sharding.SnowmanTableShardingAlgorithm
+        #              range-sharding-algorithm: cc.kevinlu.snow.server.config.sharding.SnowmanTableShardingAlgorithm
+        sm_uuid:
+          actual-data-nodes: dc-1.sm_uuid$->{['', '_used']}
+          table-strategy:
+            standard:
+              sharding-column: status
+              precise-algorithm-class-name: cc.kevinlu.snow.server.config.sharding.SnowmanTableShardingAlgorithm
+        #              range-sharding-algorithm: cc.kevinlu.snow.server.config.sharding.SnowmanTableShardingAlgorithm
+        sm_snowflake:
+          actual-data-nodes: dc-1.sm_snowflake$->{['', '_used']}
+          table-strategy:
+            standard:
+              sharding-column: status
+              precise-algorithm-class-name: cc.kevinlu.snow.server.config.sharding.SnowmanTableShardingAlgorithm
+#              range-sharding-algorithm: cc.kevinlu.snow.server.config.sharding.SnowmanTableShardingAlgorithm
+mybatis:
+  mapper-locations: classpath:mybatis/mapper/*.xml
+  type-aliases-package: cc.kevinlu.snow.server.data.model

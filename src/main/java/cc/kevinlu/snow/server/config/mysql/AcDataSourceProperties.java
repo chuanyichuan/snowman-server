@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.alibaba.nacos.api.config.annotation.NacosValue;
 
-@Configuration
+//@Configuration
 //@ConfigurationProperties(prefix = "spring.datasource")
 public class AcDataSourceProperties {
 

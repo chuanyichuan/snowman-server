@@ -35,8 +35,8 @@ import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
 
 import lombok.Data;
 
-@Data
-@NacosConfigurationProperties(prefix = "spring.datasource.druid", dataId = "snowman")
+//@Data
+//@NacosConfigurationProperties(prefix = "spring.datasource.druid", dataId = "snowman")
 public class DruidSource {
     private String  dbUrl;
 
