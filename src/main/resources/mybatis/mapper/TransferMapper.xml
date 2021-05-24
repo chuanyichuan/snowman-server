@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.kevinlu.snow.server.data.mapper.TransferMapper">
+
+    <select id="preTransfer" resultType="java.util.Map">
+        select *
+        from ${table_name}
+        where status = 1
+        limit #{size, jdbcType=INTEGER}
+    </select>
+
+    <insert id="transferDigit">
+        insert into sm_digit (service_instance_id, chunk, from_value, to_value, status, gmt_created) values
+        <foreach collection="records" item="r" separator=",">
+            (#{r.serviceInstanceId,jdbcType=BIGINT}, #{r.chunk,jdbcType=INTEGER},
+            #{r.fromValue,jdbcType=BIGINT}, #{r.toValue,jdbcType=BIGINT},
+            -1, #{r.gmtCreated,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+    <insert id="transferUuid">
+        insert into sm_uuid (service_instance_id, chunk, g_value, status, gmt_created) values
+        <foreach collection="records" item="r" separator=",">
+            (#{r.serviceInstanceId,jdbcType=BIGINT}, #{r.chunk,jdbcType=INTEGER},
+            #{r.gValue,jdbcType=VARCHAR}, -1,
+            #{r.gmtCreated,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+    <insert id="transferSnowflake">
+        insert into sm_snowflake (service_instance_id, chunk, g_value, status, gmt_created) values
+        <foreach collection="records" item="r" separator=",">
+            (#{r.serviceInstanceId,jdbcType=BIGINT}, #{r.chunk,jdbcType=INTEGER}, #{r.gValue,jdbcType=BIGINT},
+            -1, #{r.gmtCreated,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+
+    <delete id="postTransfer">
+        delete from ${table_name}
+        where status = 1 and id in
+        <foreach collection="records" item="it" open="(" close=")" separator=",">
+            #{it.id}
+        </foreach>
+    </delete>
+</mapper>

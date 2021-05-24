@@ -52,4 +52,9 @@ public final class Constants {
     public static final String CACHE_GROUP_MAP                     = "group_id_info";
     public static final String CACHE_GROUP_INSTANT_MAP             = "group_instance_id_info";
 
+    /**
+     * scheduled client key
+     */
+    public static final String SCHEDULED_CLIENT_KEY                = "sm_scheduled_client_key";
+
 }

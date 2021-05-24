@@ -23,6 +23,7 @@
  */
 package cc.kevinlu.snow.server;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.task.TaskExecutionProperties;
@@ -31,14 +32,19 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.web.client.RestTemplate;
 
 import cc.kevinlu.snow.server.utils.helper.ThreadPoolHelper;
 
 @SpringBootApplication(scanBasePackages = { "cc.kevinlu.snow.server" })
 @EnableDiscoveryClient
 @RefreshScope
+//@EnableAsyncScheduling
 @EnableAsync
+@EnableScheduling
+@MapperScan(basePackages = { "cc.kevinlu.snow.server.data.mapper" }, sqlSessionFactoryRef = "sqlSessionFactory")
 public class SnowmanApplication {
 
     public static void main(String[] args) {
@@ -49,6 +55,11 @@ public class SnowmanApplication {
     @Primary
     public ThreadPoolTaskExecutor taskExecutor(TaskExecutionProperties properties) {
         return ThreadPoolHelper.newTaskThreadPool(properties);
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 
 }

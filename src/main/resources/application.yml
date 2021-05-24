@@ -21,6 +21,8 @@ logging:
     cc.kevinlu.snow.server.data.mapper: INFO
 
 spring:
+  profiles:
+    include: sharding
   application:
     name: snowman
   datasource:
@@ -76,3 +78,7 @@ spring:
     host: 127.0.0.1
     port: 6379
     redisson: classpath:redis/redisson-single-config.yml
+
+snowman:
+  transfer:
+    table: sm_digit,sm_snowflake,sm_uuid
