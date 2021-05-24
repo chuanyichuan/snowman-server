@@ -67,21 +67,24 @@ public class TestController {
 > `maven`依赖等详细配置请查看[examples](https://github.com/chuanyichuan/snowman-example)目录下的演示项目
 
 ## 开发计划
-### v1.0.0  分支： main
- - [X] 支持Digit ID 生成算法
- - [X] 支持Snowflake ID生成算法
- - [X] 支持UUID 生成算法
- - [X] 构建snowman-spring-boot-starter实现自动配置
+### v1.0.0  Tag: v1.0.0
+ - [X] 支持 Digit ID 生成算法
+ - [X] 支持 Snowflake ID 生成算法
+ - [X] 支持 UUID 生成算法
+ - [X] 构建 snowman-spring-boot-starter 实现自动配置
  - [X] 支持高可用集群部署
- - [X] 支持ID预生成，优化每次请求效率，提升性能
+ - [X] 支持 ID 预生成，优化每次请求效率，提升性能
  - [X] 加入任务异步处理，降低服务队系统资源的影响
- - [X] 优化Snowflake时钟同步，使用Redis时钟做同步
- - [X] Web容器由Tomcat更改为Undertow 提升吞吐量
- - [X] 加入日志链路追踪MDC
+ - [X] 优化 Snowflake 时钟同步，使用 Redis 时钟做同步
+ - [X] Web 容器由 Tomcat 更改为 Undertow 提升吞吐量
+ - [X] 加入日志链路追踪 MDC
 
-### v1.0.1  分支： v1.0.1
+### v1.0.1  Tag: v1.0.1
  - [X] 历史记录支持分表，缓解数据量过大导致的操作性能问题
- - [X] 使用Redis控制定期任务执行节点
+ - [X] 使用 Redis 控制定期任务执行节点
+
+### v1.1.0  Tag: v1.1.0
+ - [ ] 新增时间戳生成算法
 
 ## 贡献指南
 
