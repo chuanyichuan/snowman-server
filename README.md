@@ -12,13 +12,18 @@ snowflake（分布式ID生成器），基于Twitter的Snowflake理论
 
 - ***JDK 版本要求: `JDK8+`*** 
 
-- 支持的后端
+- 依赖外部服务
   - MySQL
+  - Redis
 
 
 
 ## 核心概念
-区块chunk- 一个区块对应一个客户端集群，集群内节点共享，代表每次生成的ID数量
+* 服务名称name- 服务的名称
+* 区块chunk- 一个区块对应一个客户端集群，集群内节点共享，代表每次生成的ID数量
+* 服务组group- 服务独有唯一标识
+* 服务实例ID- 服务组中每一个运行实例的唯一标识(集群)
+* ID策略mode- 可选值，可选项为digit、snowflake、uuid，默认为digit
 
 
 ## 使用方法
@@ -64,7 +69,7 @@ public class TestController {
     }
 }
  ```
-> `maven`依赖等详细配置请查看[examples](https://github.com/chuanyichuan/snowman-example)目录下的演示项目
+> * `maven`依赖等详细配置请查看[examples](https://github.com/chuanyichuan/snowman-example)目录下的演示项目
 
 ## 开发计划
 ### v1.0.0  Tag: v1.0.0
