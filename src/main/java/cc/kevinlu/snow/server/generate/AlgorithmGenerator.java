@@ -21,21 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package cc.kevinlu.snow.server.config.anno;
+package cc.kevinlu.snow.server.generate;
 
-import java.lang.annotation.*;
+import java.util.List;
 
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.EnableScheduling;
+import cc.kevinlu.snow.server.processor.AlgorithmProcessor;
+import cc.kevinlu.snow.server.processor.redis.RedisProcessor;
+import cc.kevinlu.snow.server.processor.task.pojo.RegenerateBO;
 
 /**
  * @author chuan
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Inherited
-@EnableAsync
-@EnableScheduling
-public @interface EnableAsyncScheduling {
+public interface AlgorithmGenerator<T> {
+
+    List<T> generate(RegenerateBO regenerate);
+
+    List<T> regenerate(RegenerateBO regenerate);
+
+    void generateDistributedId(List<T> idList, long groupId, long instanceId, long fromValue, int chunk);
+
+    void setAlgorithmProcessor(AlgorithmProcessor algorithmProcessor);
+
+    default void setRedisProcessor(RedisProcessor redisProcessor) {
+    }
+
 }

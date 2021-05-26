@@ -1,0 +1,4 @@
+cc.kevinlu.snow.server.generate.alogrithm.DigitAlgorithm
+cc.kevinlu.snow.server.generate.alogrithm.SnowflakeAlgorithm
+cc.kevinlu.snow.server.generate.alogrithm.TimeStampAlgorithm
+cc.kevinlu.snow.server.generate.alogrithm.UuidAlgorithm

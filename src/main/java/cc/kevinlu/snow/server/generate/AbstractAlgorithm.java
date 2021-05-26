@@ -54,6 +54,10 @@ public abstract class AbstractAlgorithm<T> {
         this.algorithmProcessor = algorithmProcessor;
     }
 
+    public void setAlgorithmProcessor(AlgorithmProcessor algorithmProcessor) {
+        this.algorithmProcessor = algorithmProcessor;
+    }
+
     /**
      * get from value
      *

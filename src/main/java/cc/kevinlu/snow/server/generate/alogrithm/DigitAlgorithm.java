@@ -25,7 +25,10 @@ package cc.kevinlu.snow.server.generate.alogrithm;
 
 import java.util.List;
 
+import cc.kevinlu.snow.client.enums.IdAlgorithmEnums;
+import cc.kevinlu.snow.server.config.anno.AlgorithmAnno;
 import cc.kevinlu.snow.server.generate.AbstractAlgorithm;
+import cc.kevinlu.snow.server.generate.AlgorithmGenerator;
 import cc.kevinlu.snow.server.processor.AlgorithmProcessor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,14 +36,19 @@ import lombok.extern.slf4j.Slf4j;
  * @author chuan
  */
 @Slf4j
-public class DigitAlgorithm extends AbstractAlgorithm<Long> {
+@AlgorithmAnno(IdAlgorithmEnums.DIGIT)
+public class DigitAlgorithm extends AbstractAlgorithm<Long> implements AlgorithmGenerator<Long> {
+
+    public DigitAlgorithm() {
+        super(null);
+    }
 
     public DigitAlgorithm(AlgorithmProcessor algorithmProcessor) {
         super(algorithmProcessor);
     }
 
     @Override
-    protected void generateDistributedId(List<Long> idList, long groupId, long instanceId, long fromValue, int chunk) {
+    public void generateDistributedId(List<Long> idList, long groupId, long instanceId, long fromValue, int chunk) {
         for (long i = fromValue; i < fromValue + chunk; i++) {
             idList.add(i);
         }
