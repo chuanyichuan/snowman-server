@@ -25,8 +25,7 @@ package cc.kevinlu.snow.server.config.anno;
 
 import java.lang.annotation.*;
 
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.EnableScheduling;
+import cc.kevinlu.snow.client.enums.IdAlgorithmEnums;
 
 /**
  * @author chuan
@@ -34,8 +33,15 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Inherited
-@EnableAsync
-@EnableScheduling
-public @interface EnableAsyncScheduling {
+public @interface AlgorithmAnno {
+
+    IdAlgorithmEnums value() default IdAlgorithmEnums.DIGIT;
+
+    /**
+     * 是否需要Redis
+     * 
+     * @return
+     */
+    boolean redis() default false;
+
 }

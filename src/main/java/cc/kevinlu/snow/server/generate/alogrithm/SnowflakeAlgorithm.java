@@ -25,7 +25,10 @@ package cc.kevinlu.snow.server.generate.alogrithm;
 
 import java.util.List;
 
+import cc.kevinlu.snow.client.enums.IdAlgorithmEnums;
+import cc.kevinlu.snow.server.config.anno.AlgorithmAnno;
 import cc.kevinlu.snow.server.generate.AbstractAlgorithm;
+import cc.kevinlu.snow.server.generate.AlgorithmGenerator;
 import cc.kevinlu.snow.server.generate.worker.SnowflakeIdWorker;
 import cc.kevinlu.snow.server.processor.AlgorithmProcessor;
 import cc.kevinlu.snow.server.processor.redis.RedisProcessor;
@@ -35,9 +38,14 @@ import lombok.extern.slf4j.Slf4j;
  * @author chuan
  */
 @Slf4j
-public class SnowflakeAlgorithm extends AbstractAlgorithm<Long> {
+@AlgorithmAnno(value = IdAlgorithmEnums.SNOWFLAKE, redis = true)
+public class SnowflakeAlgorithm extends AbstractAlgorithm<Long> implements AlgorithmGenerator<Long> {
 
     private RedisProcessor redisProcessor;
+
+    public SnowflakeAlgorithm() {
+        super(null);
+    }
 
     public SnowflakeAlgorithm(AlgorithmProcessor algorithmProcessor, RedisProcessor redisProcessor) {
         super(algorithmProcessor);
@@ -45,7 +53,12 @@ public class SnowflakeAlgorithm extends AbstractAlgorithm<Long> {
     }
 
     @Override
-    protected void generateDistributedId(List<Long> idList, long groupId, long instanceId, long fromValue, int chunk) {
+    public void setRedisProcessor(RedisProcessor redisProcessor) {
+        this.redisProcessor = redisProcessor;
+    }
+
+    @Override
+    public void generateDistributedId(List<Long> idList, long groupId, long instanceId, long fromValue, int chunk) {
         if (chunk <= 0) {
             throw new IndexOutOfBoundsException("size should not equals zero!");
         }
