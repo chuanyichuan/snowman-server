@@ -89,7 +89,9 @@ public class TestController {
  - [X] 使用 Redis 控制定期任务执行节点
 
 ### v1.1.0  Tag: v1.1.0
- - [ ] 新增时间戳生成算法
+ - [X] 新增时间戳生成算法
+ - [X] 利用SPI提升算法可扩展性
+ - [X] 自定义注解AlgorithmAnno和AlgorithmInject解决算法扩展
 
 ## 贡献指南
 
