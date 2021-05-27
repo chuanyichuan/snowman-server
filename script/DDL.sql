@@ -13,6 +13,21 @@ create table sm_digit
 )
     comment '客户端获取ID记录';
 
+create table sm_digit_used
+(
+    id                  bigint auto_increment
+        primary key,
+    service_instance_id bigint                              not null comment '服务实例ID',
+    chunk               int                                 not null comment '服务实例本次获取ID的数量',
+    from_value          bigint                              not null comment 'ID起始值(含括)',
+    to_value            bigint                              not null comment 'ID结束值(含括)',
+    status              tinyint   default 0                 null comment '状态(0:未使用;1:已使用)',
+    gmt_created         timestamp default CURRENT_TIMESTAMP null,
+    constraint sm_digit_pk
+        unique (service_instance_id, from_value, to_value)
+)
+    comment '客户端获取ID已使用记录';
+
 create table sm_distribution_lock
 (
     id          bigint auto_increment
@@ -76,6 +91,46 @@ create table sm_snowflake
 )
     comment '客户端获取雪花ID记录';
 
+create table sm_snowflake_used
+(
+    id                  bigint auto_increment
+        primary key,
+    service_instance_id bigint                              not null comment '服务实例ID',
+    chunk               int                                 not null comment '服务实例本次获取ID的数量',
+    g_value             bigint                              not null comment 'ID值',
+    status              tinyint   default 0                 null comment '状态(0:未使用;1:已使用)',
+    gmt_created         timestamp default CURRENT_TIMESTAMP null,
+    constraint sm_snowflake_pk
+        unique (service_instance_id, g_value)
+)
+    comment '客户端获取雪花ID已使用记录';
+
+create table sm_timestamp
+(
+    id                  bigint auto_increment
+        primary key,
+    service_instance_id bigint                              not null comment '服务实例ID',
+    chunk               int                                 not null comment '服务实例本次获取ID的数量',
+    g_value             varchar(66)                         not null comment 'ID值',
+    status              tinyint   default 0                 null comment '状态(0:未使用;1:已使用)',
+    gmt_created         timestamp default CURRENT_TIMESTAMP null,
+    constraint sm_timestamp_unique
+        unique (service_instance_id, g_value)
+)
+    comment '客户端获取时间戳记录';
+
+create table sm_timestamp_used
+(
+    id                  bigint auto_increment
+        primary key,
+    service_instance_id bigint                              not null comment '服务实例ID',
+    chunk               int                                 not null comment '服务实例本次获取ID的数量',
+    g_value             varchar(66)                         not null comment 'ID值',
+    status              tinyint   default 0                 null comment '状态(0:未使用;1:已使用)',
+    gmt_created         timestamp default CURRENT_TIMESTAMP null
+)
+    comment '客户端获取时间戳已使用记录';
+
 create table sm_uuid
 (
     id                  bigint auto_increment
@@ -89,4 +144,18 @@ create table sm_uuid
         unique (service_instance_id, g_value)
 )
     comment '客户端获取UUID记录';
+
+create table sm_uuid_used
+(
+    id                  bigint auto_increment
+        primary key,
+    service_instance_id bigint                              not null comment '服务实例ID',
+    chunk               int                                 not null comment '服务实例本次获取ID的数量',
+    g_value             varchar(66)                         not null comment 'ID值',
+    status              tinyint   default 0                 null comment '状态(0:未使用;1:已使用)',
+    gmt_created         timestamp default CURRENT_TIMESTAMP null,
+    constraint sm_uuid_pk
+        unique (service_instance_id, g_value)
+)
+    comment '客户端获取UUID已使用记录';
 
