@@ -28,10 +28,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
+import cc.kevinlu.snow.client.enums.IdAlgorithmEnums;
 import cc.kevinlu.snow.server.config.Constants;
+import cc.kevinlu.snow.server.config.anno.AlgorithmAnno;
+import cc.kevinlu.snow.server.config.anno.AlgorithmInject;
 import cc.kevinlu.snow.server.data.mapper.BatchMapper;
 import cc.kevinlu.snow.server.data.mapper.UuidMapper;
 import cc.kevinlu.snow.server.data.model.UuidDO;
@@ -50,16 +50,16 @@ import lombok.extern.slf4j.Slf4j;
  * @author chuan
  */
 @Slf4j
-@Component
+@AlgorithmAnno(IdAlgorithmEnums.UUID)
 public class UuidPersistentProcessor extends PersistentProcessor<String> {
 
-    @Autowired
+    @AlgorithmInject(clazz = BatchMapper.class)
     private BatchMapper        batchMapper;
-    @Autowired
+    @AlgorithmInject(clazz = RedisProcessor.class)
     private RedisProcessor     redisProcessor;
-    @Autowired
+    @AlgorithmInject(clazz = UuidMapper.class)
     private UuidMapper         uuidMapper;
-    @Autowired
+    @AlgorithmInject(clazz = AsyncTaskProcessor.class)
     private AsyncTaskProcessor asyncTaskProcessor;
 
     public static final String TABLE = "sm_uuid";
