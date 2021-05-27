@@ -32,10 +32,6 @@ import org.springframework.util.Assert;
 
 import cc.kevinlu.snow.client.enums.IdAlgorithmEnums;
 import cc.kevinlu.snow.server.config.anno.AlgorithmAnno;
-import cc.kevinlu.snow.server.generate.alogrithm.DigitAlgorithm;
-import cc.kevinlu.snow.server.generate.alogrithm.SnowflakeAlgorithm;
-import cc.kevinlu.snow.server.generate.alogrithm.TimeStampAlgorithm;
-import cc.kevinlu.snow.server.generate.alogrithm.UuidAlgorithm;
 import cc.kevinlu.snow.server.processor.AlgorithmProcessor;
 import cc.kevinlu.snow.server.processor.redis.RedisProcessor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,16 +44,9 @@ import lombok.extern.slf4j.Slf4j;
 public class GenerateAlgorithmFactory {
 
     @Autowired
-    private AlgorithmProcessor          algorithmProcessor;
+    private AlgorithmProcessor algorithmProcessor;
     @Autowired
-    private RedisProcessor              redisProcessor;
-
-    private volatile DigitAlgorithm     digitAlgorithm;
-    private volatile SnowflakeAlgorithm snowflakeAlgorithm;
-    private volatile UuidAlgorithm      uuidAlgorithm;
-    private volatile TimeStampAlgorithm timeStampAlgorithm;
-    private Object[]                    lockObjs = new Object[] { new Object(), new Object(), new Object(),
-            new Object() };
+    private RedisProcessor     redisProcessor;
 
     public AlgorithmGenerator factory(Integer mode) {
         IdAlgorithmEnums algorithm = IdAlgorithmEnums.getEnumByAlgorithm(mode);

@@ -27,11 +27,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
+import cc.kevinlu.snow.client.enums.IdAlgorithmEnums;
 import cc.kevinlu.snow.server.config.Constants;
-import cc.kevinlu.snow.server.data.mapper.BatchMapper;
+import cc.kevinlu.snow.server.config.anno.AlgorithmAnno;
+import cc.kevinlu.snow.server.config.anno.AlgorithmInject;
 import cc.kevinlu.snow.server.data.mapper.DigitMapper;
 import cc.kevinlu.snow.server.data.model.DigitDO;
 import cc.kevinlu.snow.server.pojo.PersistentBO;
@@ -47,16 +46,14 @@ import lombok.extern.slf4j.Slf4j;
  * @author chuan
  */
 @Slf4j
-@Component
+@AlgorithmAnno(IdAlgorithmEnums.DIGIT)
 public class DigitPersistentProcessor extends PersistentProcessor<Long> {
 
-    @Autowired
+    @AlgorithmInject(clazz = DigitMapper.class)
     private DigitMapper        digitMapper;
-    @Autowired
-    private BatchMapper        batchMapper;
-    @Autowired
+    @AlgorithmInject(clazz = RedisProcessor.class)
     private RedisProcessor     redisProcessor;
-    @Autowired
+    @AlgorithmInject(clazz = AsyncTaskProcessor.class)
     private AsyncTaskProcessor asyncTaskProcessor;
 
     public static final String TABLE = "sm_digit";
