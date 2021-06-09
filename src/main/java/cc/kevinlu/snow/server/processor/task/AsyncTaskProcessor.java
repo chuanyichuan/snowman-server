@@ -23,18 +23,14 @@
  */
 package cc.kevinlu.snow.server.processor.task;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
-
-import cc.kevinlu.snow.server.data.mapper.DigitMapper;
-import cc.kevinlu.snow.server.data.mapper.SnowflakeMapper;
-import cc.kevinlu.snow.server.data.mapper.UuidMapper;
-import cc.kevinlu.snow.server.data.model.*;
-import cc.kevinlu.snow.server.pojo.enums.StatusEnums;
 
 /**
  * @author chuan
@@ -44,44 +40,55 @@ import cc.kevinlu.snow.server.pojo.enums.StatusEnums;
 public class AsyncTaskProcessor {
 
     @Autowired
-    private UuidMapper             uuidMapper;
-    @Autowired
-    private DigitMapper            digitMapper;
-    @Autowired
-    private SnowflakeMapper        snowflakeMapper;
-    @Autowired
     private ThreadPoolTaskExecutor taskExecutor;
+    @Autowired
+    private JdbcTemplate           jdbcTemplate;
+
+    public static final String     UUID_SQL      = "update sm_uuid set status = 1 where id = ?";
+    public static final String     SNOWFLAKE_SQL = "update sm_snowflake set status = 1 where id = ?";
+    public static final String     DIGIT_SQL     = "update sm_digit set status = 1 where id = ?";
+    public static final String     TIMESTAMP_SQL = "update sm_timestamp set status = 1 where id = ?";
 
     public void uuidStatus(List records) {
         taskExecutor.execute(() -> {
-            UuidDO uuidDO = new UuidDO();
-            uuidDO.setStatus(StatusEnums.USED.getStatus());
-
-            UuidDOExample example = new UuidDOExample();
-            example.createCriteria().andIdIn(records);
-            uuidMapper.updateByExampleSelective(uuidDO, example);
+            List<Object[]> batchSql = new ArrayList<>(records.size());
+            for (Object id : records) {
+                batchSql.add(new Object[] { id });
+            }
+            exec(UUID_SQL, batchSql);
         });
     }
 
     public void snowflakeStatus(List records) {
         taskExecutor.execute(() -> {
-            SnowflakeDO snowflakeDO = new SnowflakeDO();
-            snowflakeDO.setStatus(StatusEnums.USED.getStatus());
-
-            SnowflakeDOExample example = new SnowflakeDOExample();
-            example.createCriteria().andIdIn(records);
-            snowflakeMapper.updateByExampleSelective(snowflakeDO, example);
+            List<Object[]> batchSql = new ArrayList<>(records.size());
+            for (Object id : records) {
+                batchSql.add(new Object[] { id });
+            }
+            exec(SNOWFLAKE_SQL, batchSql);
         });
     }
 
     public void digitStatus(Long id) {
         taskExecutor.execute(() -> {
-            DigitDO digitDO = new DigitDO();
-            digitDO.setStatus(StatusEnums.USED.getStatus());
-            digitDO.setId(id);
-
-            digitMapper.updateByPrimaryKeySelective(digitDO);
+            List<Object[]> batchSql = new ArrayList<>(1);
+            batchSql.add(new Object[] { id });
+            exec(DIGIT_SQL, batchSql);
         });
     }
 
+    public void timestampStatus(List records) {
+        taskExecutor.execute(() -> {
+            List<Object[]> batchSql = new ArrayList<>(records.size());
+
+            for (Object id : records) {
+                batchSql.add(new Object[] { id });
+            }
+            exec(TIMESTAMP_SQL, batchSql);
+        });
+    }
+
+    private void exec(String sql, List<Object[]> args) {
+        jdbcTemplate.batchUpdate(sql, args);
+    }
 }

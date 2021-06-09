@@ -21,29 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package cc.kevinlu.snow.server.web;
+package cc.kevinlu.snow.server.config.anno;
 
-import java.util.List;
+import java.lang.annotation.*;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RestController;
+import cc.kevinlu.snow.client.enums.IdAlgorithmEnums;
 
-import cc.kevinlu.snow.client.exceptions.ParamIllegalException;
-import cc.kevinlu.snow.client.snowflake.SnowflakeClient;
-import cc.kevinlu.snow.server.service.SnowflakeService;
+/**
+ * @author chuan
+ */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface AlgorithmAnno {
 
-@RestController
-public class SnowflakeController implements SnowflakeClient {
+    IdAlgorithmEnums value() default IdAlgorithmEnums.DIGIT;
 
-    @Autowired
-    private SnowflakeService snowflakeService;
+    /**
+     * 是否需要Redis
+     * 
+     * @return
+     */
+    boolean redis() default false;
 
-    @Override
-    public List<Object> generate(String groupCode, String instanceCode) {
-        if (StringUtils.isAnyBlank(groupCode, instanceCode)) {
-            throw new ParamIllegalException("groupCode or instanceCode is null!");
-        }
-        return snowflakeService.generate(groupCode, instanceCode);
-    }
 }

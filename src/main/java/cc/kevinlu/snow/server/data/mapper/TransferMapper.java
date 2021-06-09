@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import cc.kevinlu.snow.server.data.model.DigitDO;
 import cc.kevinlu.snow.server.data.model.SnowflakeDO;
+import cc.kevinlu.snow.server.data.model.TimeStampDO;
 import cc.kevinlu.snow.server.data.model.UuidDO;
 
 /**
@@ -23,5 +24,8 @@ public interface TransferMapper {
 
     void transferSnowflake(@Param("records") List<SnowflakeDO> list);
 
+    void transferTimeStamp(@Param("records") List<TimeStampDO> list);
+
     void postTransfer(@Param("table_name") String table, @Param("records") List data);
+
 }

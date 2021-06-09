@@ -21,21 +21,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package cc.kevinlu.snow.server.service;
+package cc.kevinlu.snow.server.web;
 
 import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RestController;
+
+import cc.kevinlu.snow.client.exceptions.ParamIllegalException;
+import cc.kevinlu.snow.client.snowflake.SnowmanClient;
+import cc.kevinlu.snow.server.service.SnowmanService;
 
 /**
  * @author chuan
  */
-public interface SnowflakeService {
+@RestController
+public class SnowmanController implements SnowmanClient {
 
-    /**
-     * 
-     *
-     * @param groupCode
-     * @param instanceCode
-     * @return
-     */
-    List<Object> generate(String groupCode, String instanceCode);
+    @Autowired
+    private SnowmanService snowmanService;
+
+    @Override
+    public List<Object> generate(String groupCode, String instanceCode) {
+        if (StringUtils.isAnyBlank(groupCode, instanceCode)) {
+            throw new ParamIllegalException("groupCode or instanceCode is null!");
+        }
+        return snowmanService.generate(groupCode, instanceCode);
+    }
 }

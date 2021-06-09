@@ -29,7 +29,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -83,7 +82,7 @@ public class RedisQueueListener {
      * 
      * @param preGenerateBO
      */
-    @Transactional(rollbackFor = Exception.class, propagation = Propagation.NESTED, transactionManager = "code_transaction")
+    @Transactional(rollbackFor = Exception.class)
     public void checkChunkSize(PreGenerateBO preGenerateBO) {
         String groupCode = preGenerateBO.getGroup();
         String instanceCode = preGenerateBO.getInstance();

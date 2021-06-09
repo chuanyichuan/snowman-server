@@ -1,0 +1,4 @@
+cc.kevinlu.snow.server.processor.algorithm.DigitPersistentProcessor
+cc.kevinlu.snow.server.processor.algorithm.SnowflakePersistentProcessor
+cc.kevinlu.snow.server.processor.algorithm.TimestampPersistentProcessor
+cc.kevinlu.snow.server.processor.algorithm.UuidPersistentProcessor

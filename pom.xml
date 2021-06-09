@@ -19,6 +19,8 @@
         <java.source.version>1.8</java.source.version>
         <java.target.version>1.8</java.target.version>
 
+        <snowman-client-version>1.0.2-SNAPSHOT</snowman-client-version>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
@@ -83,7 +85,7 @@
         <dependency>
             <groupId>cc.kevinlu</groupId>
             <artifactId>snowman-client</artifactId>
-            <version>1.0.1</version>
+            <version>${snowman-client-version}</version>
         </dependency>
 
         <dependency>

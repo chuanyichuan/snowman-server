@@ -128,8 +128,22 @@ public class InstanceCacheProcessor implements InitializingBean {
      * @return
      */
     public Long getGroupId(String groupCode) {
+        return getGroupIdWithInit(groupCode, 0);
+    }
+
+    /**
+     * get id of group, and will init cache if cache is empty
+     * 
+     * @param groupCode
+     * @return
+     */
+    public Long getGroupIdWithInit(String groupCode, int times) {
         Object id = redisProcessor.hget(Constants.CACHE_GROUP_MAP, groupCode);
         if (id == null) {
+            if (times == 0) {
+                initCache();
+                return getGroupIdWithInit(groupCode, ++times);
+            }
             return null;
         }
         return Long.parseLong(String.valueOf(id));
@@ -143,16 +157,30 @@ public class InstanceCacheProcessor implements InitializingBean {
      * @return
      */
     public Long getInstanceId(Long groupId, String instanceCode) {
+        return getInstanceIdWithInit(groupId, instanceCode, 0);
+    }
+
+    /**
+     * get id of service instance, and will init cache if cache is empty
+     * 
+     * @param groupId
+     * @param instanceCode
+     * @return
+     */
+    public Long getInstanceIdWithInit(Long groupId, String instanceCode, int times) {
         Object id = redisProcessor.hget(Constants.CACHE_GROUP_INSTANT_MAP,
                 String.format(INSTANCE_PATTERN, groupId, instanceCode));
         if (id == null) {
+            if (times == 0) {
+                initCache();
+                return getInstanceIdWithInit(groupId, instanceCode, ++times);
+            }
             return null;
         }
         return Long.parseLong(String.valueOf(id));
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    private void initCache() {
         if (!redisProcessor.hasKey(Constants.CACHE_GROUP_MAP)) {
             List<GroupDO> groupList = groupMapper.selectByExample(new GroupDOExample());
             if (CollectionUtils.isNotEmpty(groupList)) {
@@ -170,5 +198,10 @@ public class InstanceCacheProcessor implements InitializingBean {
                 redisProcessor.hmset(Constants.CACHE_GROUP_INSTANT_MAP, map);
             }
         }
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        initCache();
     }
 }

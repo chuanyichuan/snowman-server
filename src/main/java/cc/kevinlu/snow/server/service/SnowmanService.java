@@ -21,21 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package cc.kevinlu.snow.server.config.anno;
+package cc.kevinlu.snow.server.service;
 
-import java.lang.annotation.*;
-
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.EnableScheduling;
+import java.util.List;
 
 /**
  * @author chuan
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Inherited
-@EnableAsync
-@EnableScheduling
-public @interface EnableAsyncScheduling {
+public interface SnowmanService {
+
+    /**
+     * 
+     *
+     * @param groupCode
+     * @param instanceCode
+     * @return
+     */
+    List<Object> generate(String groupCode, String instanceCode);
 }

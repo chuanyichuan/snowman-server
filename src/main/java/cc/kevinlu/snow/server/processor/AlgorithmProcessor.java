@@ -23,22 +23,28 @@
  */
 package cc.kevinlu.snow.server.processor;
 
+import java.lang.reflect.Field;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ServiceLoader;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import cc.kevinlu.snow.client.enums.IdAlgorithmEnums;
 import cc.kevinlu.snow.server.config.Constants;
+import cc.kevinlu.snow.server.config.anno.AlgorithmAnno;
+import cc.kevinlu.snow.server.config.anno.AlgorithmInject;
 import cc.kevinlu.snow.server.data.mapper.BatchMapper;
 import cc.kevinlu.snow.server.data.mapper.GroupMapper;
 import cc.kevinlu.snow.server.data.model.GroupDO;
 import cc.kevinlu.snow.server.pojo.PersistentBO;
-import cc.kevinlu.snow.server.processor.algorithm.DigitPersistentProcessor;
 import cc.kevinlu.snow.server.processor.algorithm.PersistentProcessor;
-import cc.kevinlu.snow.server.processor.algorithm.SnowflakePersistentProcessor;
-import cc.kevinlu.snow.server.processor.algorithm.UuidPersistentProcessor;
 import cc.kevinlu.snow.server.processor.pojo.AsyncCacheBO;
 import cc.kevinlu.snow.server.processor.pojo.RecordAcquireBO;
 import cc.kevinlu.snow.server.processor.redis.RedisProcessor;
@@ -49,23 +55,19 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Component
-public class AlgorithmProcessor {
+public class AlgorithmProcessor implements ApplicationContextAware {
 
     @Autowired
-    private InstanceCacheProcessor       instanceCacheProcessor;
+    private InstanceCacheProcessor instanceCacheProcessor;
     @Autowired
-    private UuidPersistentProcessor      uuidPersistentProcessor;
-    @Autowired
-    private SnowflakePersistentProcessor snowflakePersistentProcessor;
-    @Autowired
-    private DigitPersistentProcessor     digitPersistentProcessor;
-    @Autowired
-    private RedisProcessor               redisProcessor;
+    private RedisProcessor         redisProcessor;
 
     @Autowired
-    private GroupMapper                  groupMapper;
+    private GroupMapper            groupMapper;
     @Autowired
-    private BatchMapper                  batchMapper;
+    private BatchMapper            batchMapper;
+
+    private ApplicationContext     applicationContext;
 
     /**
      * get instance id
@@ -115,14 +117,50 @@ public class AlgorithmProcessor {
 
     private PersistentProcessor getProcessor(int mode) {
         IdAlgorithmEnums algorithm = IdAlgorithmEnums.getEnumByAlgorithm(mode);
-        switch (algorithm) {
-            case UUID:
-                return uuidPersistentProcessor;
-            case SNOWFLAKE:
-                return snowflakePersistentProcessor;
-            default:
-                return digitPersistentProcessor;
+
+        ServiceLoader<PersistentProcessor> serviceLoader = ServiceLoader.load(PersistentProcessor.class);
+        Iterator<PersistentProcessor> iter = serviceLoader.iterator();
+        while (iter.hasNext()) {
+            PersistentProcessor persistent = iter.next();
+            AlgorithmAnno anno = persistent.getClass().getAnnotation(AlgorithmAnno.class);
+            Assert.notNull(anno, "algorithm name can not be empty!");
+            if (algorithm.equals(anno.value())) {
+                // 获取fields
+                Field[] fields = persistent.getClass().getDeclaredFields();
+                if (fields.length == 0) {
+                    return persistent;
+                }
+                for (Field field : fields) {
+                    field.setAccessible(true);
+                    AlgorithmInject inject = field.getAnnotation(AlgorithmInject.class);
+                    if (inject == null) {
+                        continue;
+                    }
+                    Class clazz = inject.clazz();
+                    Object instance = null;
+                    // manual
+                    if (inject.manual()) {
+                        try {
+                            instance = clazz.newInstance();
+                        } catch (Exception e) {
+                            log.error("manual build instance occur error!", e);
+                        }
+                        continue;
+                    } else {
+                        // get instance from spring
+                        instance = applicationContext.getBean(clazz);
+                    }
+                    try {
+                        field.set(persistent, instance);
+                    } catch (IllegalAccessException e) {
+                        log.error("");
+                    }
+                }
+
+                return persistent;
+            }
         }
+        throw new RuntimeException("error!");
     }
 
     public List<Object> getRecords(RecordAcquireBO acquireBO) {
@@ -140,5 +178,14 @@ public class AlgorithmProcessor {
             redisProcessor.hset(Constants.GROUP_RECENT_MAX_VALUE_QUEUE, key, maxValue);
         }
         return maxValue;
+    }
+
+    public Long timeStamp() {
+        return redisProcessor.getTimestamp() * 10;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 }

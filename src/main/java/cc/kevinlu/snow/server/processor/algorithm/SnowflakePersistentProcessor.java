@@ -28,16 +28,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
+import cc.kevinlu.snow.client.enums.IdAlgorithmEnums;
 import cc.kevinlu.snow.server.config.Constants;
+import cc.kevinlu.snow.server.config.anno.AlgorithmAnno;
+import cc.kevinlu.snow.server.config.anno.AlgorithmInject;
 import cc.kevinlu.snow.server.data.mapper.BatchMapper;
 import cc.kevinlu.snow.server.data.mapper.SnowflakeMapper;
 import cc.kevinlu.snow.server.data.model.SnowflakeDO;
 import cc.kevinlu.snow.server.data.model.SnowflakeDOExample;
 import cc.kevinlu.snow.server.pojo.PersistentBO;
-import cc.kevinlu.snow.server.pojo.enums.StatusEnums;
 import cc.kevinlu.snow.server.processor.pojo.AsyncCacheBO;
 import cc.kevinlu.snow.server.processor.pojo.RecordAcquireBO;
 import cc.kevinlu.snow.server.processor.redis.RedisProcessor;
@@ -51,30 +50,23 @@ import lombok.extern.slf4j.Slf4j;
  * @author chuan
  */
 @Slf4j
-@Component
-public class SnowflakePersistentProcessor implements PersistentProcessor<Long> {
+@AlgorithmAnno(IdAlgorithmEnums.SNOWFLAKE)
+public class SnowflakePersistentProcessor extends PersistentProcessor<Long> {
 
-    @Autowired
+    @AlgorithmInject(clazz = BatchMapper.class)
     private BatchMapper        batchMapper;
-    @Autowired
+    @AlgorithmInject(clazz = SnowflakeMapper.class)
     private SnowflakeMapper    snowflakeMapper;
-    @Autowired
+    @AlgorithmInject(clazz = RedisProcessor.class)
     private RedisProcessor     redisProcessor;
-    @Autowired
+    @AlgorithmInject(clazz = AsyncTaskProcessor.class)
     private AsyncTaskProcessor asyncTaskProcessor;
+
+    public static final String TABLE = "sm_snowflake";
 
     @Override
     public void asyncToCache(AsyncCacheBO asyncCacheBO) {
-        List<Long> recordList = batchMapper.selectIdFromSnowflake(asyncCacheBO.getInstanceId(),
-                StatusEnums.USABLE.getStatus());
-        if (CollectionUtils.isEmpty(recordList)) {
-            log.debug("async to cache empty!");
-            return;
-        }
-        String key = String.format(Constants.CACHE_ID_LOCK_PATTERN, asyncCacheBO.getGroupId(),
-                asyncCacheBO.getInstanceId(), asyncCacheBO.getMode());
-        redisProcessor.del(key);
-        redisProcessor.lSet(key, recordList);
+        super.asyncToCacheCall(asyncCacheBO, TABLE);
     }
 
     @Override

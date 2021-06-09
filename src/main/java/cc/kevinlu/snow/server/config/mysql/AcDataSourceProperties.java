@@ -23,24 +23,23 @@
  */
 package cc.kevinlu.snow.server.config.mysql;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
-import com.alibaba.nacos.api.config.annotation.NacosValue;
-
-//@Configuration
+@Configuration
 //@ConfigurationProperties(prefix = "spring.datasource")
 public class AcDataSourceProperties {
 
-    @NacosValue("${spring.datasource.url:}")
+    @Value("${spring.datasource.url:}")
     private String url;
 
-    @NacosValue("${spring.datasource.username:}")
+    @Value("${spring.datasource.username:}")
     private String username;
 
-    @NacosValue("${spring.datasource.password:}")
+    @Value("${spring.datasource.password:}")
     private String password;
 
-    @NacosValue("${spring.datasource.driver-class-name:}")
+    @Value("${spring.datasource.driver-class-name:}")
     private String driverClassName;
 
     public String getUrl() {

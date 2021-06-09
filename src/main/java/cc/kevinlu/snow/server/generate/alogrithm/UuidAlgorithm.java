@@ -25,7 +25,10 @@ package cc.kevinlu.snow.server.generate.alogrithm;
 
 import java.util.List;
 
+import cc.kevinlu.snow.client.enums.IdAlgorithmEnums;
+import cc.kevinlu.snow.server.config.anno.AlgorithmAnno;
 import cc.kevinlu.snow.server.generate.AbstractAlgorithm;
+import cc.kevinlu.snow.server.generate.AlgorithmGenerator;
 import cc.kevinlu.snow.server.generate.worker.RandomWorker;
 import cc.kevinlu.snow.server.processor.AlgorithmProcessor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,15 +37,19 @@ import lombok.extern.slf4j.Slf4j;
  * @author chuan
  */
 @Slf4j
-public class UuidAlgorithm extends AbstractAlgorithm<String> {
+@AlgorithmAnno(IdAlgorithmEnums.UUID)
+public class UuidAlgorithm extends AbstractAlgorithm<String> implements AlgorithmGenerator<String> {
+
+    public UuidAlgorithm() {
+        super(null);
+    }
 
     public UuidAlgorithm(AlgorithmProcessor algorithmProcessor) {
         super(algorithmProcessor);
     }
 
     @Override
-    protected void generateDistributedId(List<String> idList, long groupId, long instanceId, long fromValue,
-                                         int chunk) {
+    public void generateDistributedId(List<String> idList, long groupId, long instanceId, long fromValue, int chunk) {
         for (int i = 0; i < chunk; i++) {
             idList.add(RandomWorker.getRandomUUID());
         }

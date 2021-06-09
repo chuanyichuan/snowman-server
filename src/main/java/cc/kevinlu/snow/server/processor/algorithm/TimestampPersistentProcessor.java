@@ -26,18 +26,22 @@ package cc.kevinlu.snow.server.processor.algorithm;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import cc.kevinlu.snow.client.enums.IdAlgorithmEnums;
 import cc.kevinlu.snow.server.config.Constants;
 import cc.kevinlu.snow.server.config.anno.AlgorithmAnno;
 import cc.kevinlu.snow.server.config.anno.AlgorithmInject;
-import cc.kevinlu.snow.server.data.mapper.DigitMapper;
-import cc.kevinlu.snow.server.data.model.DigitDO;
+import cc.kevinlu.snow.server.data.mapper.BatchMapper;
+import cc.kevinlu.snow.server.data.mapper.TimeStampMapper;
+import cc.kevinlu.snow.server.data.model.TimeStampDO;
+import cc.kevinlu.snow.server.data.model.TimeStampDOExample;
 import cc.kevinlu.snow.server.pojo.PersistentBO;
 import cc.kevinlu.snow.server.processor.pojo.AsyncCacheBO;
 import cc.kevinlu.snow.server.processor.pojo.RecordAcquireBO;
 import cc.kevinlu.snow.server.processor.redis.RedisProcessor;
 import cc.kevinlu.snow.server.processor.task.AsyncTaskProcessor;
+import cc.kevinlu.snow.server.utils.CollectionUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -46,17 +50,19 @@ import lombok.extern.slf4j.Slf4j;
  * @author chuan
  */
 @Slf4j
-@AlgorithmAnno(IdAlgorithmEnums.DIGIT)
-public class DigitPersistentProcessor extends PersistentProcessor<Long> {
+@AlgorithmAnno(IdAlgorithmEnums.TIMESTAMP)
+public class TimestampPersistentProcessor extends PersistentProcessor<Long> {
 
-    @AlgorithmInject(clazz = DigitMapper.class)
-    private DigitMapper        digitMapper;
+    @AlgorithmInject(clazz = BatchMapper.class)
+    private BatchMapper        batchMapper;
     @AlgorithmInject(clazz = RedisProcessor.class)
     private RedisProcessor     redisProcessor;
+    @AlgorithmInject(clazz = TimeStampMapper.class)
+    private TimeStampMapper    timeStampMapper;
     @AlgorithmInject(clazz = AsyncTaskProcessor.class)
     private AsyncTaskProcessor asyncTaskProcessor;
 
-    public static final String TABLE = "sm_digit";
+    public static final String TABLE = "sm_timestamp";
 
     @Override
     public void asyncToCache(AsyncCacheBO asyncCacheBO) {
@@ -68,34 +74,42 @@ public class DigitPersistentProcessor extends PersistentProcessor<Long> {
         long instanceId = persistent.getInstanceId();
         List<Long> idList = persistent.getIdList();
         int status = persistent.getUsed() ? 1 : 0;
-        long from = idList.get(0);
-        long to = idList.get(idList.size() - 1);
-        DigitDO digit = new DigitDO();
-        digit.setChunk(idList.size());
-        digit.setFromValue(from);
-        digit.setToValue(to);
-        digit.setServiceInstanceId(instanceId);
-        digit.setStatus(status);
-        digit.setGmtCreated(new Date());
-        digitMapper.insertSelective(digit);
+        int chunk = idList.size();
+        Date date = new Date();
+        List<TimeStampDO> records = new ArrayList<>();
+        int index = 1;
+        for (Long id : idList) {
+            TimeStampDO uuid = new TimeStampDO();
+            uuid.setChunk(chunk);
+            uuid.setServiceInstanceId(instanceId);
+            uuid.setGValue(String.valueOf(id));
+            uuid.setStatus(status);
+            uuid.setGmtCreated(date);
+            records.add(uuid);
+            if (index++ % Constants.BATCH_INSERT_SIZE == 0) {
+                batchMapper.insertTimestamp(records);
+                records.clear();
+            }
+        }
+        if (!CollectionUtils.isEmpty(records)) {
+            batchMapper.insertTimestamp(records);
+        }
     }
 
     @Override
     public List<Long> getRecords(RecordAcquireBO acquireBO) {
         String key = String.format(Constants.CACHE_ID_LOCK_PATTERN, acquireBO.getGroupId(), acquireBO.getInstanceId(),
                 acquireBO.getMode());
-        Object record = redisProcessor.lPop(key);
-        if (record == null) {
+        List records = redisProcessor.lGet(key, 0, acquireBO.getChunk() - 1);
+        if (CollectionUtils.isEmpty(records)) {
             return null;
         }
-        Long recordId = Long.valueOf(String.valueOf(record));
-        DigitDO data = digitMapper.selectByPrimaryKey(recordId);
-
-        List<Long> result = new ArrayList<>();
-        for (long i = data.getFromValue(); i <= data.getToValue(); i++) {
-            result.add(i);
-        }
-        asyncTaskProcessor.digitStatus(recordId);
+        TimeStampDOExample example = new TimeStampDOExample();
+        example.createCriteria().andIdIn(records);
+        List<TimeStampDO> dataList = timeStampMapper.selectByExample(example);
+        List<Long> result = dataList.stream().map(v -> Long.parseLong(v.getGValue())).collect(Collectors.toList());
+        asyncTaskProcessor.timestampStatus(records);
+        redisProcessor.lTrim(key, acquireBO.getChunk(), -1);
         return result;
     }
 

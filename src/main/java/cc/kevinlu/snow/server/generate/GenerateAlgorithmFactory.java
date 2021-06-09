@@ -23,13 +23,15 @@
  */
 package cc.kevinlu.snow.server.generate;
 
+import java.util.Iterator;
+import java.util.ServiceLoader;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import cc.kevinlu.snow.client.enums.IdAlgorithmEnums;
-import cc.kevinlu.snow.server.generate.alogrithm.DigitAlgorithm;
-import cc.kevinlu.snow.server.generate.alogrithm.SnowflakeAlgorithm;
-import cc.kevinlu.snow.server.generate.alogrithm.UuidAlgorithm;
+import cc.kevinlu.snow.server.config.anno.AlgorithmAnno;
 import cc.kevinlu.snow.server.processor.AlgorithmProcessor;
 import cc.kevinlu.snow.server.processor.redis.RedisProcessor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,46 +44,27 @@ import lombok.extern.slf4j.Slf4j;
 public class GenerateAlgorithmFactory {
 
     @Autowired
-    private AlgorithmProcessor          algorithmProcessor;
+    private AlgorithmProcessor algorithmProcessor;
     @Autowired
-    private RedisProcessor              redisProcessor;
+    private RedisProcessor     redisProcessor;
 
-    private volatile DigitAlgorithm     digitAlgorithm;
-    private volatile SnowflakeAlgorithm snowflakeAlgorithm;
-    private volatile UuidAlgorithm      uuidAlgorithm;
-    private Object[]                    lockObjs = new Object[] { new Object(), new Object(), new Object() };
-
-    public AbstractAlgorithm factory(Integer mode) {
+    public AlgorithmGenerator factory(Integer mode) {
         IdAlgorithmEnums algorithm = IdAlgorithmEnums.getEnumByAlgorithm(mode);
-        switch (algorithm) {
-            case SNOWFLAKE:
-                if (snowflakeAlgorithm == null) {
-                    synchronized (lockObjs[0]) {
-                        if (snowflakeAlgorithm == null) {
-                            snowflakeAlgorithm = new SnowflakeAlgorithm(algorithmProcessor, redisProcessor);
-                        }
-                    }
+        ServiceLoader<AlgorithmGenerator> serviceLoader = ServiceLoader.load(AlgorithmGenerator.class);
+        Iterator<AlgorithmGenerator> iter = serviceLoader.iterator();
+        while (iter.hasNext()) {
+            AlgorithmGenerator generator = iter.next();
+            AlgorithmAnno anno = generator.getClass().getAnnotation(AlgorithmAnno.class);
+            Assert.notNull(anno, "algorithm name can not be empty!");
+            if (algorithm.equals(anno.value())) {
+                generator.setAlgorithmProcessor(algorithmProcessor);
+                if (anno.redis()) {
+                    generator.setRedisProcessor(redisProcessor);
                 }
-                return snowflakeAlgorithm;
-            case UUID:
-                if (uuidAlgorithm == null) {
-                    synchronized (lockObjs[1]) {
-                        if (uuidAlgorithm == null) {
-                            uuidAlgorithm = new UuidAlgorithm(algorithmProcessor);
-                        }
-                    }
-                }
-                return uuidAlgorithm;
-            default:
-                if (digitAlgorithm == null) {
-                    synchronized (lockObjs[2]) {
-                        if (digitAlgorithm == null) {
-                            digitAlgorithm = new DigitAlgorithm(algorithmProcessor);
-                        }
-                    }
-                }
-                return digitAlgorithm;
+                return generator;
+            }
         }
+        throw new RuntimeException("error!");
     }
 
 }

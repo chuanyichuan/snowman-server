@@ -28,16 +28,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
+import cc.kevinlu.snow.client.enums.IdAlgorithmEnums;
 import cc.kevinlu.snow.server.config.Constants;
+import cc.kevinlu.snow.server.config.anno.AlgorithmAnno;
+import cc.kevinlu.snow.server.config.anno.AlgorithmInject;
 import cc.kevinlu.snow.server.data.mapper.BatchMapper;
 import cc.kevinlu.snow.server.data.mapper.UuidMapper;
 import cc.kevinlu.snow.server.data.model.UuidDO;
 import cc.kevinlu.snow.server.data.model.UuidDOExample;
 import cc.kevinlu.snow.server.pojo.PersistentBO;
-import cc.kevinlu.snow.server.pojo.enums.StatusEnums;
 import cc.kevinlu.snow.server.processor.pojo.AsyncCacheBO;
 import cc.kevinlu.snow.server.processor.pojo.RecordAcquireBO;
 import cc.kevinlu.snow.server.processor.redis.RedisProcessor;
@@ -51,30 +50,23 @@ import lombok.extern.slf4j.Slf4j;
  * @author chuan
  */
 @Slf4j
-@Component
-public class UuidPersistentProcessor implements PersistentProcessor<String> {
+@AlgorithmAnno(IdAlgorithmEnums.UUID)
+public class UuidPersistentProcessor extends PersistentProcessor<String> {
 
-    @Autowired
+    @AlgorithmInject(clazz = BatchMapper.class)
     private BatchMapper        batchMapper;
-    @Autowired
+    @AlgorithmInject(clazz = RedisProcessor.class)
     private RedisProcessor     redisProcessor;
-    @Autowired
+    @AlgorithmInject(clazz = UuidMapper.class)
     private UuidMapper         uuidMapper;
-    @Autowired
+    @AlgorithmInject(clazz = AsyncTaskProcessor.class)
     private AsyncTaskProcessor asyncTaskProcessor;
+
+    public static final String TABLE = "sm_uuid";
 
     @Override
     public void asyncToCache(AsyncCacheBO asyncCacheBO) {
-        List<Long> recordList = batchMapper.selectIdFromUuid(asyncCacheBO.getInstanceId(),
-                StatusEnums.USABLE.getStatus());
-        if (CollectionUtils.isEmpty(recordList)) {
-            log.debug("async to cache empty!");
-            return;
-        }
-        String key = String.format(Constants.CACHE_ID_LOCK_PATTERN, asyncCacheBO.getGroupId(),
-                asyncCacheBO.getInstanceId(), asyncCacheBO.getMode());
-        redisProcessor.del(key);
-        redisProcessor.lSet(key, recordList);
+        super.asyncToCacheCall(asyncCacheBO, TABLE);
     }
 
     @Override

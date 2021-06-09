@@ -25,18 +25,45 @@ package cc.kevinlu.snow.server.processor.algorithm;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import cc.kevinlu.snow.server.config.Constants;
+import cc.kevinlu.snow.server.data.mapper.BatchMapper;
 import cc.kevinlu.snow.server.pojo.PersistentBO;
+import cc.kevinlu.snow.server.pojo.enums.StatusEnums;
 import cc.kevinlu.snow.server.processor.pojo.AsyncCacheBO;
 import cc.kevinlu.snow.server.processor.pojo.RecordAcquireBO;
+import cc.kevinlu.snow.server.processor.redis.RedisProcessor;
+import cc.kevinlu.snow.server.utils.CollectionUtils;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author chuan
  */
-public interface PersistentProcessor<T> {
+@Slf4j
+public abstract class PersistentProcessor<T> {
 
-    void asyncToCache(AsyncCacheBO asyncCacheBO);
+    @Autowired
+    private BatchMapper    batchMapper;
+    @Autowired
+    private RedisProcessor redisProcessor;
 
-    void syncToDb(PersistentBO<T> persistent);
+    public abstract void asyncToCache(AsyncCacheBO asyncCacheBO);
 
-    List<T> getRecords(RecordAcquireBO acquireBO);
+    protected void asyncToCacheCall(AsyncCacheBO asyncCacheBO, String table) {
+        List<Long> recordList = batchMapper.selectIdFromAlgorithm(table, asyncCacheBO.getInstanceId(),
+                StatusEnums.USABLE.getStatus());
+        if (CollectionUtils.isEmpty(recordList)) {
+            log.debug("async to cache empty!");
+            return;
+        }
+        String key = String.format(Constants.CACHE_ID_LOCK_PATTERN, asyncCacheBO.getGroupId(),
+                asyncCacheBO.getInstanceId(), asyncCacheBO.getMode());
+        redisProcessor.del(key);
+        redisProcessor.lSet(key, recordList);
+    }
+
+    public abstract void syncToDb(PersistentBO<T> persistent);
+
+    public abstract List<T> getRecords(RecordAcquireBO acquireBO);
 }
