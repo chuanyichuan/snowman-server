@@ -1,16 +1,17 @@
 package cc.kevinlu.snow.server.data.model;
 
-import java.io.Serializable;
-import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.io.Serializable;
+import java.util.Date;
+
 /**
-* @author chuan
-* @time 2021-05-19
-*/
+ * @author chuan
+ * @time 2021-05-19
+ */
 @Data
 @ToString
 @NoArgsConstructor
